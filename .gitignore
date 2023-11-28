@@ -1,6 +1,4 @@
-.DS_Store
-.idea
-*.log
+arx/
 tmp/
 # ---------------------------------
 # Emacs gitignore: https://github.com/github/gitignore/blob/main/Global/Emacs.gitignore

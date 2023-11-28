@@ -1,9 +1,15 @@
-Selecting deleted buffer### Brif
+### Brif
 
-| State: | in progress |
-| Stage: | scope design & first MVP dev |
+State:
+: in progress
+Stage:
+: scope design
 
-Automating postinstall procedures.
+### About
+Script to automate steps after installing Arch Linux on my PC.
+
+### Overview
+General workflow is:
 00. Arch Linux official installer finished succesfully.
 Script have to :
 01. Base system config ('first steps').
@@ -18,12 +24,31 @@ Script have to :
 10. Install and setup environments.
 11. ?
 
+Workflow devided into stages.
+Stages, which needs reboot, are located in separate scripts.
+Head .sh is to rule stages workflow via sequential execution of functions.
+Base actions are is in separate 'functions'.
+Data for messages and configs are in separate files.
+
+### TODO
+
+- [ ] 1. ...
+- [ ] 2. ...
+- [ ] 3. ...
+- [ ] 4. ...
+
+### Important notes
+
+- aaa
+- bbb
+- ccc
+
 
 
 
 ##### Create a new repository on the command line
 
-- touch README.md
+- touch README.md .gitignore (or copy from my notebug notes)
 - git init
 - git add README.md
 - git commit -m "first commit"
