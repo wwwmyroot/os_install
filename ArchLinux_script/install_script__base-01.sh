@@ -41,10 +41,13 @@
 # .. .. .. .. .. .. .. .. .. ..
 #
 # ---- 0.3.) Language, keyboard ----
+# sudo echo "ru_RU.UTF-8 UTF-8" >> /etc/locale.gen
+# locale-gen
 # cd /home/al/
 # touch .xinitrc
-# echo "setxkbmap -lauout us,ru -option grp:caps_toggle" >
-#
+# echo "setxkbmap -lauout us,ru -option grp:caps_toggle" >> .xinitrc
+# :OR:
+# sudo sed -i -e "s|#ru_RU.UTF-8|ru_RU.UTF-8|" << /etc/locale.gen
 #
 #
 #
@@ -113,7 +116,7 @@
 #
 #
 #
-# --- mu: script to use file:
+# --- my: script to use file:
 # https://habr.com/ru/companies/ruvds/articles/325928/
 # important NOTE: sourse file contains only one value in line - no backspaces(!)
 ##!/bin/bash

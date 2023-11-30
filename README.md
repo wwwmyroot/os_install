@@ -1,14 +1,13 @@
 ### Brif
 
-**State:**
+**State:**  
 : in progress
-**Stage:**
+**Stage:**  
 : scope design
 
 ### About
 
-Aim is to make full OS and software insatallation and configuration whith no pain.
-
+Aim is to make full OS and software insatallation and configuration whith no pain.  
 Script have to automate steps after installing Arch Linux on my PC.
 
 ### Overview
@@ -21,10 +20,10 @@ Script have to automate steps after installing Arch Linux on my PC.
 **05. Prepare infrastructure, install VM and environments managers;**
 **06. Install and configure user environments and VM-s;**
 **07. Install and configure current active project environments and VM-s;**
-**
+
 ##### Workflow details
 **00. Arch Linux official installer finished succesfully.**
-*  - only official installer ("archlinux install");
+  - only official installer ("archlinux install");
   - GRUB;
   - locale: "US";
   - host name: "pc";
@@ -42,11 +41,10 @@ Script have to automate steps after installing Arch Linux on my PC.
 **03. Install X11, x-server.**
 ****04. Install Intel microcode.**
   - ? upgrade grub ->? reboot ? 
-```
+```shell
 grub install ...                # define
 grub-mkconfig -o /boot/grub.cfg
 ```
-
 **05. Install solutions for unknown devices [2023-11-29].** 
 ```
   - gla2xx -> pkg "linux-firmware-qlogic";
@@ -59,10 +57,10 @@ grub-mkconfig -o /boot/grub.cfg
 ```
 **04. Install Nvidia drivers.**
 **05. Install wacom drivers ( ? and soft ? ).**
-**06. Install locale "RU".
-
-```
-  - echo "" >> .xinitrc
+**06. Install locale "RU".**
+```shell
+touch ~/.xinitrc
+echo "setxkbmap -layout us,ru -option grp:caps_toggle" >> .xinitrc
 ```
 **06. Install fonts.**
 **07. Install packages for base environment ('evergreens').**
@@ -71,11 +69,11 @@ grub-mkconfig -o /boot/grub.cfg
 **10. Install and setup environments.**
 **11. ? ...**
 
-Workflow devided into **STAGES**.
-Stages, which needs reboot, are located in **separate scripts**.
-Head .sh is to rule stages workflow via sequential execution of functions.
-Base actions are is in separate 'functions'.
-Data for messages and configs are in separate files.
+Workflow devided into **STAGES**.  
+Stages, which needs reboot, are located in **separate scripts**.  
+Head .sh is to rule stages workflow via sequential execution of functions.  
+Base actions are is in separate 'functions'.  
+Data for messages and configs are in separate files.  
 
 ### TODO
 
@@ -109,4 +107,6 @@ Data for messages and configs are in separate files.
 
 ###### Repo link
 
+``` sh
 git@notabug.org:myroot/os_install.git
+```
