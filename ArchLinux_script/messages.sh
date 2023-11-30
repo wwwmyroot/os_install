@@ -42,8 +42,21 @@ msg_st04_f="---- |STAGE-04 FINISH| INSTALL AND CONFIG SYSTEM-WIDE PKG; ---- "
 msg_st05_f="---- |STAGE-05 FINISH| INSTALL ENVIRONMENTS MANAGERS; ---- "
 msg_st06_f="---- |STAGE-06 FINISH| INSTALL ENVIRONMENTS; ---- "
 
-#
+# -- Stage_00
 msg_st00_1="---- DEFINING VARIABLES ----"
 msg_st00_2="---- VARIABLES SET OK ----"
+msg_st00_3="---- Asking for sudo. Insert sudo password:"
+msg_st00_4="---- CURRENT TIME SETTINGS:"
+msg_st00_5="---- CONFIGURED TIME SETTINGS:"
+msg_st00_6="---- TIME SERVER SET OK ----"
+msg_st00_7="---- RU locale with CAPS_toggle SET OK ----"
 #
-#
+# -- Stage_01
+msg_st01_1="---- PACMAN-KEY INITIALISATION DONE (1/6) OK ----"
+msg_st01_2="---- VERIFYING THE MASTER KEYS DONE (2/6) OK ----"
+msg_st01_3="---- KEYS ACTUALISATION DONE (3/6) OK ----"
+msg_st01_4="---- KEYS UPGRADE DONE (4/6) OK ----"
+msg_st01_5="---- SYSTEM PARTIAL UPDATE DONE (5/6) OK ----"
+msg_st01_6="---- SYSTEM UPDATE DONE (6/6) OK ----"
+msg_st01_7="----  ----"
+msg_st01_8="----  ----"

@@ -1,0 +1,44 @@
+# ---- pacman
+pacman.conf
+/etc/
+## -rw-r--r--  1 root root   2858 Sep  4 19:29 pacman.conf
+### user settings:
+### [options]
+### VerbosePkgLists
+### ParallelDownloads = 50
+#
+# ----
+#
+##
+### user settings:
+###
+###
+#
+# ----
+#
+##
+### user settings:
+###
+###
+#
+# ----
+#
+##
+### user settings:
+###
+###
+#
+# ----
+#
+##
+### user settings:
+###
+###
+#
+# ----
+#
+##
+### user settings:
+###
+###
+#

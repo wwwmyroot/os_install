@@ -2,31 +2,50 @@
 #
 # https://github.com/picodotdev/alis/blob/master/alis-packages.sh
 #
-# построено на функциях, которые друг-друга вызывают
-# хороший уровень, но пока не потяну
+# -- color
+RED="\033[0;91m"
+GREEN="\033[0;92m"
+BLUE="\033[0;96m"
+WHITE="\033[0;97m"
+NC="\033[0m"
 
-VAR_RUN="false"
-
-function init_config() {
-    local COMMONS_FILE="alis-commons.sh"
-
-    source "$COMMONS_FILE"
-    if [ "$PACKAGES_STANDALONE" == "true" ]; then
-        source "$COMMONS_CONF_FILE"
+# --------------------------------
+RUN_SCRIPT_DIRECTORY="$(pwd)"
+# ---- STAGE-00 ----
+# -- include messages file
+# source ./messages.sh         # direct command
+#
+function source_msg() {
+    local MSG_FILE="$RUN_SCRIPT_DIRECTORY/messages.sh"
+    if [ -f $MSG_FILE ]; then
+        source "$MSG_FILE"
+    else
+        echo -e "${RED}-- (!) ERROR:${NC} MISSING $(MSG_FILE) TO SOURCE."
+        echo -e "${RED}-- CHECK SCRIPT STARTUP DIRECTORY: --${NC}"
+        pwd | ls -la
+        echo -e "---- ---- STOP ---- ----"
+        exit 1
     fi
-    source "$PACKAGES_CONF_FILE"
+}
+#
+#
+#
+#
+function source_msg1() {
+    local MSG_FILE1="$RUN_SCRIPT_DIRECTORY/messages1.sh"
+    if [ -f $MSG_FILE1 ]; then
+        source "$MSG_FILE1"
+    else
+        echo -e "${RED}-- (!) ERROR:${NC} * ${BLUE}MISSING${NC} ${GREEN}${MSG_FILE1}${NC} ${BLUE}TO SOURCE.${NC} *"
+        echo -e "${RED}-- CHECK SCRIPT STARTUP DIRECTORY: --${NC}"
+        pwd | ls -la
+        echo -e "---- ---- STOP ---- ----"
+        exit 1
+    fi
 }
 
-function main() {
-    local START_TIMESTAMP=$(date -u +"%F %T")
-    set +u
-    if [ "$COMMOMS_LOADED" != "true" ]; then
-        VAR_RUN="true"
-    fi
-    set -u
-
-    init_config
-
-
-
-}
+source_msg
+echo -e "$msg_line"
+echo -e "$msg_line"
+echo -e "$msg_line"
+source_msg1

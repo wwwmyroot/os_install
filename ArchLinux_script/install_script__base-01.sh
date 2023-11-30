@@ -3,6 +3,20 @@
 # <2023-11-26> _ Base file to create script for my cusom OS installation
 # this version is for monolith script to decompose further
 #
+# ---- sources
+# arch-linux wiki: https://wiki.archlinux.org/title/Installation_guide
+# alis script: https://github.com/picodotdev/alis
+#
+#
+# TODO [0/4]
+# - [ ] 1) dev LOG functional;
+# - [ ] 2) dev additional info about packages for every stage;
+# - [ ] 3) define what packages to install with official installer;
+# - [ ] 4) NOTE: get & save .json from official installer;
+# - [ ] 5) discover how to echo string to a proper section of a file (maybe "sed");
+# - [ ]
+#
+#
 # ---- BRIF ABOUT : ----
 # 0) OS: Arch Linux
 # 1) user name: al
@@ -20,57 +34,65 @@
 # - ? usb (ventoy) ....
 #
 #
-# ---- ---- ---- ----
+# ---- ABOUT PACKAGES ----
+# ---- 0). additional packages during install (insert manually):
 #
 #
-# ---- additional packages during install (insert manually):
+# ---- 1). list of hardware packages ----
+# ## ---- INTEL drivers for PC (microcode);
 #
 #
-#
-# ---- 0.1.) list of hardware packages ----
-# AIM: install hardware
-# .. .. .. .. .. .. .. .. .. ..         # --- drivers for PC
-# .. .. .. .. .. .. .. .. .. ..         # --- drivers for book
-# .. .. .. .. .. .. .. .. .. ..
+# ## ---- VIDEO drivers for PC (NVIDIA 250);
 #
 #
-# ---- 0.2.) ? setup hardware packages ----
-# AIM: ? setup hardware
-# .. .. .. .. .. .. .. .. .. ..         # --- drivers for PC
-# .. .. .. .. .. .. .. .. .. ..         # --- drivers for book
-# .. .. .. .. .. .. .. .. .. ..
-#
-# ---- 0.3.) Language, keyboard ----
-# sudo echo "ru_RU.UTF-8 UTF-8" >> /etc/locale.gen
-# locale-gen
-# cd /home/al/
-# touch .xinitrc
-# echo "setxkbmap -lauout us,ru -option grp:caps_toggle" >> .xinitrc
-# :OR:
-# sudo sed -i -e "s|#ru_RU.UTF-8|ru_RU.UTF-8|" << /etc/locale.gen
+# ## ---- AUDIO drivers for PC (pipeware);
 #
 #
+# ## ---- WACOM drivers for PC (Wacom Intuos Pro)
 #
 #
+# ---- 2). list of base packages (system-wide "evergreens")
+# ## -- system
+# base base-devel linux linux-firmware linux-headers
+#
+# ### -- ?? ntfs support ?
+# |? ntfs-3g
+#
+# ## -- cmd line tools
+# make cmake
+# git wget curl
+# zip unzip unrar p7zip
+# tree htop neofetch
+# |? bash-completion less
+# |? scrot feh nnn
 #
 #
-# ---- 1.1.) list of first packages ----
-# AIM: install basic soft
+# -- cmd line media
+# ffmpeg yt-dlp zathura
 #
-# # --- systemwide base packages
-# linux-headers base base-devel         # --- sys first soft
-# ntfs-3g                               # --- sys first soft, ntfs support
-# make cmake bash-completion less       # --- cmd line make tools
-# tree scrot feh |? nnn                 # --- cmd line managment
-# xorg-server xclip xwallpaper dmenu xorg-xrandr    # --- for Xorg
-# fd ripgrep                            # --- for emacs
-# git wget curl                         # --- cmd line e-net
-# kitty                                 # --- main terminal shell
-# ffmpeg yt-dlp                         # --- cmd line media
-# zip unzip unrar p7zip                 # --- cmd line archiving
-# htop neofetch                         # --- cmd line tools
+#
+# ## --- ssh, vpn
+# openssh openvpn
+#
+#
+# ## -- Xorg
+# xorg xorg-server xorg-xrandr
+# xclip
+#
+#
+# ## -- main terminal emulator
+# kitty
+#
+# ## -- sys use
+# dmenu
+# |? xwallpaper
+#
+#
+# ## -- for Emacs
+# fd ripgrep
+#
+# ---- 3). System-wide software
 # neovim                                # --- neovim
-# openssh openvpn                       # --- ssh, vpn
 # elinks firefox                        # --- browser
 # font-manager                          # --- OS tool
 # gimp obs-studio mpv                   # --- media
@@ -144,101 +166,150 @@ set -euo pipefail
 # -- for debugging
 # set -xeuo pipefail
 #
-# ---- ---- VARIABLE SETTINGS ---- ----
+# ---- COMMON STATIC VARIABLES ----
 #
-script_folder="$(pwd)"
-config_directory="$HOME/.config"
-fonts_directory="/usr/share/fonts"
-scripts_directory="/usr/local/bin"
-#? gtk_theme_directory="/usr/share/themes"
+RUN_SCRIPT_DIRECTORY="$(pwd)"
+USER_CONFIG_DIRECTORY="$HOME/.config"
+USER_FONTS_DIRECTORY="/usr/share/fonts"
+USER_SCRIPTS_DIRECTORY="/usr/local/bin"
+# -- maybe:
+RUN_SCRIPT_CONF_FILE="install__script.conf"
+RUN_SCRIPT_LOG_FILE="install__script.log"
+RECOVERY_CONF_FILE="install__recovery.conf"
+RECOVERY_LOG_FILE="install__recovery.log"
+PACKAGES_CONF_FILE="install__packages.conf"
+PACKAGES_LOG_FILE="install__packages.log"
+COMMONS_CONF_FILE="install__commons.conf"
+PROVISION_DIRECTORY="$RUN_SCRIPT_DIRECTORY/files/"
+# -- color
+RED="\033[0;91m"
+GREEN="\033[0;92m"
+BLUE="\033[0;96m"
+WHITE="\033[0;97m"
+NC="\033[0m"
+
+# --------------------------------
 #
-#
-# ---- ---- INCLUDE MESSAGES ---- ----
+# ---- STAGE-00 ----
+# -- include messages file
+# source ./messages.sh         # direct command
 #
 function source_msg() {
-    local MSG_FILE="$script_folder/messages.sh"
+    local MSG_FILE="$RUN_SCRIPT_DIRECTORY/messages.sh"
     if [ -f $MSG_FILE ]; then
         source "$MSG_FILE"
     else
-        echo -e "-- (!) ERROR: MISSING $(MSG_FILE) TO SOURCE."
-        echo -e "-- CHECK SCRIPT STARTUP DIRECTORY: --"
-        pwd | ls -a
+        # echo -e "${RED}-- (!) ERROR:${NC} MISSING $(MSG_FILE) TO SOURCE."
+        echo -e "${RED}-- (!) ERROR:${NC} * ${BLUE}MISSING${NC} ${GREEN}${MSG_FILE1}${NC} ${BLUE}TO SOURCE.${NC} *"
+        echo -e "${RED}-- CHECK SCRIPT STARTUP DIRECTORY: --${NC}"
+        pwd | ls -la
         echo -e "---- ---- STOP ---- ----"
         exit 1
     fi
 }
 #
+# -- echo welcome message ----
 function msg_welcome() {
   echo -e "$msg_line"
   echo -e "$msg_001_plan"
   echo -e "$msg_line"
+  sleep 3
 }
-
-# -- direct command
-# source ./messages.sh
-# ----
-echo -e "$msg_001_plan"
-echo -e "$msg_line"
-# ---- st00 -- START STAGE-00 ----
 #
-echo -e "$msg_st00_0"
-#
-# -- ask for sudo
+# -- ask for sudo | [test: OK]
 function ask_sudo() {
-    sudo pwd >> /dev/null
+  echo "$msg_st00_3"
+  sudo pwd >> /dev/null
 }
-# -- network time protocol
-sudo timedatectl set-ntp true
-
-
-
-
-
-
-echo -e "$msg_ok"
 #
-# ---- START ---
-echo "$msg_001_plan"
-sleep 3
+# -- configure time
+function configure_time() {
+  echo "$msg_st00_4"
+  timedatectl status
+  timedatectl set-timezone UTC
+  timedatectl set-timezone "Europe/Moscow"
+  timedatectl set-ntp true
+  echo "$msg_st00_5"
+  timedatectl status
+  echo "$msg_st00_6"
+}
+#
+# -- RU locale, keyboard
+#
+function ru_locale() {
+  sudo echo "ru_RU.UTF-8 UTF-8" >> /etc/locale.gen
+  # :OR:
+  # sudo sed -i -e "s|#ru_RU.UTF-8|ru_RU.UTF-8|" << /etc/locale.gen
+  sudo locale-gen
+  cd $HOME
+  touch .xinitrc
+  echo "setxkbmap -lauout us,ru -option grp:caps_toggle" >> .xinitrc
+  echo "$msg_st00_7"
+}
+#
+# -- setup pacman
+function setup_pacman() {
+  # TODO: choose --v1: to edit /etc/pacman.conf; --v2: copy dotfile as root;
+  # --v1: uncomment and/or set values:
+  # TODO: fix editing by .sh directly in proper section [options] of pacman.conf
+  #       >> :OR: add to the end of file via ">>";
+    # CheckSpace                # -> ? uncomment if default is commented;
+    # VerbosePkgLists           # -> uncomment;
+    # ParallelDownloads = 50    # uncomment and set to "50";
+    # sudo sed -i "s/#Color/Color/" /etc/pacman.conf
+    # sudo sed -i "s/#CheckSpace/CheckSpace/" /etc/pacman.conf
+    # sudo sed -i "s/#ParallelDownloads = 5/ParallelDownloads = 50/" /etc/pacman.conf
+    #
+    #
+    # -- v2:
+    # sudo cp -f "$script_folder/pacman.conf" /etc/
+    # :OR: ( ? overwrite without prompt? )
+    #? sudo \cp "$script_folder/pacman.conf" /etc/
+}
+#
+# -- stage_00 exec-function
+function stage_00() {
+  def_script_variables
+  source_msg
+  msg_welcome
+  ask_sudo
+  configure_time
+  ru_locale
+}
+#
+# TODO: develop & add in stage_00:
+#  1) infrastructure for script LOGGING;
+#     # see "alis"
+#  2) save additional info about packages at all stages;
+#     # save package list: pacman -Q > $HOME/pkg_list__start_point.txt
+#     # count packages:  pacman -Q | wc -l >> $HOME/pkg_list__start_point.txt
+#
+# TODO: ?? include network time protocol setup if is not done yet ??
+#  ##? sudo timedatectl set-ntp true
 #
 # ---- STAGE-01 ----
-echo "$msg_p02_0"
-# ---- 01-01 _ keyring update ----
-# Обновление ключей Arch Linux
-## 1) Инициализация связки ключей;
-## 2) Верифицировать master keys;
-## 3) Проверка актуальности ключей;
-## 4) Upgrade ключей;
-## 5) Partial Update системы;
-echo -e " ---- START BLOCK "
-echo -e " -#- UPDATE SYSTEM KEYRING AND PARTIAL UPGRADE SYSTEM (0/5) ----"
-sudo pacman-key --init
-echo -e " -##- INITIALISATION DONE (1/5) OK ----"
-sudo pacman-key --populate
-# sudo pacman-key --populate archlinux
-echo -e " -##- VERIFYING THE MASTER KEYS DONE (2/5) OK ----"
-sudo pacman-key --refresh-keys
-echo -e " -##- KEYS ACTUALISATION DONE (3/5) OK ----"
-sudo pacman -Sy archlinux-keyring
-echo -e " -##- KEYS UPGRADE DONE (4/5) OK ----"
-sudo pacman -Su
-echo -e " -##- SYSTEM PARTIAL UPDATE DONE (5/5) OK ----"
-echo -e " ---- FINISH B-01_01/02---- UPDATE SYSTEM KEYRING AND PARTIAL UPGRADE SYSTEM (5/5) OK ----"
 #
-# ---- 1) Full system upgrade ----
-echo -e "---- START B-01_02/02  ---- FULL SYSTEM UPGRADE (0/2) ----"
-#
-echo -e " ---- CLEAR SYSTEM UPDATE (need user confirm) ----"
-sudo pacman -Syu
-# echo -e " ---- CLEAR SYSTEM UPDATE (don't need user confirm) ----"
-# sudo pacman -Syu --noconfirm
-#
-echo -e " ---- FINISH B-01_02/02---- CLEAR SYSTEM UPDATE (1/1) OK ----"
+function stage_01() {
+  echo -e "$msg_st01_0"
+  sudo pacman-key --init              # init keys;
+  echo -e "$msg_st01_1"
+  sudo pacman-key --populate          # verify master keys;
+  echo -e "$msg_st01_2"
+  sudo pacman-key --refresh-keys      # actualize keys;
+  echo -e "$msg_st01_3"
+  sudo pacman -Sy archlinux-keyring   # upgrade keys;
+  echo -e "$msg_st01_4"
+  sudo pacman -Su                     # partial system update;
+  echo -e "$msg_st01_5"
+  sudo pacman -Syu --noconfirm        # full system update;
+  echo -e "$msg_st01_6"
+  echo -e "$msg_st01_f"
+}
 #
 #
-# -- NOTE: to add
-## count packages:
-# pacman -Q | wc -l
+#
+#
+# -- NOTE: ? to add additional info to LOG folder
 # # versions
 # flatpak list --app
 #
@@ -248,20 +319,41 @@ echo -e " ---- FINISH B-01_02/02---- CLEAR SYSTEM UPDATE (1/1) OK ----"
 # # for x in $(cat package_list.txt); do sudo pacman -S $x; done
 # -- to list packages without versions
 # sudo pacman -Qqe
-####################################################################################################
+#
+#
+#
+#
+##############################################
+##############################################
+#
 # ---- #### ---- MAIN WORKFLOW ---- #### ----
-function main() {
-  ask_sudo
-  source_msg
-  msg_welcome
+
+function print_step() {
+    STEP="$1"
+    echo ""
+    echo -e "${BLUE}# ${STEP} step${NC}"
+    echo ""
 }
 
+function execute_step() {
+    local STEP="$1"
+    eval "$STEP"
+}
+
+
+
+function main() {
+  stage_00
+  stage_01
+}
+#
 main
 
 
-
-####################################################################################################
-
+#
+##############################################
+##############################################
+#
 # -----------------------------------------------------------------------------
 # --- INSTALL DIALOG
 # A tool to display dialog boxes from shell scripts

@@ -29,10 +29,24 @@ set -euo pipefail
 # set -xeuo pipefail
 #
 # ---- include messages (massages.sh)
-echo "$msg_line"
+# echo "$msg_line"     # no
 source messages.sh
+echo "$msg_line"
 echo "$msg_001_plan"
 echo "$msg_line"
+#
+current_dir=$(pwd)
+#
+for f in "${current_dir[@]}; do
+    source "$f/*.sh"
+    source "$f/*.conf"
+done
+
+
+
+
+
+
 # ---- run STAGE-00 ----
 echo "$msg_line"
 echo "$msg_st00_0"
