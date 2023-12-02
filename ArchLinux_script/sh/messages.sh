@@ -68,6 +68,7 @@ msg_st01_5="---- SYSTEM PARTIAL UPDATE DONE (5/6) OK ----"
 msg_st01_6="---- SYSTEM UPDATE DONE (6/6) OK ----"
 msg_st01_7="----  ----"
 msg_st01_8="----  ----"
+#:w
 #
 # -- Stage_02
 msg_st02_1="---- MISSING FIRMWARE TO INSTALL [2023-12-02]:
@@ -91,10 +92,11 @@ msg_st02_1="---- MISSING FIRMWARE TO INSTALL [2023-12-02]:
 
 NOTE: package <lah> is needed to unpack, it will be installed;
 "
-msg_st02_2="---- Installing 'linux-firmware-qlogic' (4 missings) from Arch repo ----"
-msg_st02_3="---- KEYS ACTUALISATION DONE (3/6) OK ----"
-msg_st02_4="---- KEYS UPGRADE DONE (4/6) OK ----"
-msg_st02_5="---- SYSTEM PARTIAL UPDATE DONE (5/6) OK ----"
-msg_st02_6="---- SYSTEM UPDATE DONE (6/6) OK ----"
-msg_st02_7="----  ----"
-msg_st02_8="----  ----"
+msg_st02_2="---- Installing 'linux-firmware' from Arch repo DONE (1/10) ----"
+msg_st02_3="---- Installing 'linux-firmware-qlogic' DONE (2/10) OK ----"
+msg_st02_4="---- Installing 'curl make cmake base base-devel lah' DONE (3/10) OK ----"
+msg_st02_5="---- Installing 'aic94xx-firmware' from AUR DONE (4/10) OK ----"
+msg_st02_6="---- Installing 'wd719x-firmware' from AUR DONE (5/10) OK ----"
+msg_st02_7="---- Installing 'upd72020x-fw' from AUR DONE (6/10) OK ----"
+msg_st02_="----  DONE (5/10) OK ----"
+msg_st02_="----  DONE (6/10) OK ----"
