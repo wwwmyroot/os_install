@@ -1,10 +1,18 @@
 #!/bin/bash
 #
+# -- color
+# RED="\033[0;91m"
+# GREEN="\033[0;92m"
+# BLUE="\033[0;96m"
+# WHITE="\033[0;97m"
+# NC="\033[0m"
+#
 # ---- ---- MESSAGES ---- ----
 # -- COMMON MSG
 msg_line="#### #### #### #### #### ####"
 msg_ok="---- ---- OK ---- ----"
 msg_stop="---- ---- STOP ---- ----"
+msg_line_small="-----------------------------"
 #
 #
 #
@@ -60,3 +68,33 @@ msg_st01_5="---- SYSTEM PARTIAL UPDATE DONE (5/6) OK ----"
 msg_st01_6="---- SYSTEM UPDATE DONE (6/6) OK ----"
 msg_st01_7="----  ----"
 msg_st01_8="----  ----"
+#
+# -- Stage_02
+msg_st02_1="---- MISSING FIRMWARE TO INSTALL [2023-12-02]:
+|---+----------------+-----+-------------------------|
+|   | Module         |     | Package                 |
+|---+----------------+-----+-------------------------|
+| 1 | aic94xx        | AUR | aic94xx-firmware        |
+| 2 | wd719x         | AUR | wd719x-firmware         |
+| 3 | xhci_pci       | AUR | upd72020x-fw            |
+| 4 | bfa            |     | linux-firmware-qlogic   |
+| 4 | qed            |     | linux-firmware-qlogic   |
+| 4 | qla1280        |     | linux-firmware-qlogic   |
+| 4 | qla2xxx        |     | linux-firmware-qlogic   |
+|---+----------------+-----+-------------------------|
+
+* v01: packages from AUR will be:
+- downloaded by <curl> in ~/temp_firmware ;
+- unpacked by <tar>;
+- compiled by <make>;
+- installed by <pacman -U [pkg-]>;
+
+NOTE: package <lah> is needed to unpack, it will be installed;
+"
+msg_st02_2="---- Installing 'linux-firmware-qlogic' (4 missings) from Arch repo ----"
+msg_st02_3="---- KEYS ACTUALISATION DONE (3/6) OK ----"
+msg_st02_4="---- KEYS UPGRADE DONE (4/6) OK ----"
+msg_st02_5="---- SYSTEM PARTIAL UPDATE DONE (5/6) OK ----"
+msg_st02_6="---- SYSTEM UPDATE DONE (6/6) OK ----"
+msg_st02_7="----  ----"
+msg_st02_8="----  ----"

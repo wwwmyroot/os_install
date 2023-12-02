@@ -1,0 +1,130 @@
+# -------------------------------------------------------------------------------
+# To list all packages explicitly installed and not required as dependencies:
+# [al@pc] $ sudo pacman -Qet
+# 
+aic94xx-firmware 30-10
+alacritty 0.12.3-1
+alsa-tools 1.2.5-2
+alsa-utils 1.2.10-1
+base 3-2
+base-devel 1-1
+bspwm 0.9.10-3
+calibre 6.29.0-1
+chromium 119.0.6045.159-1
+clojure 1.11.1.1386-1
+cmake 3.27.9-1
+dmenu 5.2-1
+elinks 0.16.1.1-2
+emacs-nativecomp 29.1-4
+fd 8.7.1-1
+firefox 120.0.1-1
+fisher 4.4.4-1
+font-manager 0.8.8-1
+git-lfs 3.4.0-1
+grub 2:2.12rc1-5
+htop 3.2.2-1
+intel-ucode 20231114-1
+iwd 2.10-1
+jupyterlab 4.0.9-1
+kitty 0.31.0-1
+linux-firmware-qlogic 20231110.74158e7a-1
+linux-headers 6.6.3.arch1-1
+linux-lts 6.1.64-1
+man-db 2.12.0-1
+mc 4.8.30-1
+mpv 1:0.36.0-1
+nano 7.2-1
+neofetch 7.1.0-2
+neovim 0.9.4-2
+nnn 4.9-1
+obs-studio 30.0.0-1
+openvpn 2.6.8-1
+otf-aurulent-nerd 3.1.1-1
+otf-codenewroman-nerd 3.1.1-1
+otf-comicshanns-nerd 3.1.1-1
+otf-droid-nerd 3.1.1-1
+otf-firamono-nerd 3.1.1-1
+otf-hasklig-nerd 3.1.1-1
+otf-hermit-nerd 3.1.1-1
+otf-opendyslexic-nerd 3.1.1-1
+otf-overpass-nerd 3.1.1-1
+pacman-contrib 1.9.1-1
+psensor 1.2.1-4
+ripgrep 14.0.3-1
+rxvt-unicode 9.31-4
+scrot 1.10-1
+smartmontools 7.4-1
+snapd 2.60.3-1
+tmux 3.3_a-7
+tree 2.1.1-1
+ttc-iosevka 27.3.5-1
+ttc-iosevka-aile 27.3.5-1
+ttc-iosevka-curly 27.3.5-1
+ttc-iosevka-curly-slab 27.3.5-1
+ttc-iosevka-etoile 27.3.5-1
+ttc-iosevka-slab 27.3.5-1
+ttf-3270-nerd 3.1.1-1
+ttf-agave-nerd 3.1.1-1
+ttf-anonymouspro-nerd 3.1.1-1
+ttf-arimo-nerd 3.1.1-1
+ttf-bigblueterminal-nerd 3.1.1-1
+ttf-bitstream-vera-mono-nerd 3.1.1-1
+ttf-cascadia-code-nerd 3.1.1-1
+ttf-cousine-nerd 3.1.1-1
+ttf-daddytime-mono-nerd 3.1.1-1
+ttf-dejavu-nerd 3.1.1-1
+ttf-fantasque-nerd 3.1.1-1
+ttf-firacode-nerd 3.1.1-1
+ttf-go-nerd 3.1.1-1
+ttf-hack-nerd 3.1.1-1
+ttf-heavydata-nerd 3.1.1-1
+ttf-iawriter-nerd 3.1.1-1
+ttf-ibmplex-mono-nerd 3.1.1-1
+ttf-inconsolata-go-nerd 3.1.1-1
+ttf-inconsolata-lgc-nerd 3.1.1-1
+ttf-inconsolata-nerd 3.1.1-1
+ttf-iosevka-nerd 3.1.1-1
+ttf-iosevkaterm-nerd 3.1.1-1
+ttf-jetbrains-mono-nerd 3.1.1-1
+ttf-lekton-nerd 3.1.1-1
+ttf-liberation-mono-nerd 3.1.1-1
+ttf-lilex-nerd 3.1.1-1
+ttf-meslo-nerd 3.1.1-1
+ttf-monofur-nerd 3.1.1-1
+ttf-monoid-nerd 3.1.1-1
+ttf-mononoki-nerd 3.1.1-1
+ttf-mplus-nerd 3.1.1-1
+ttf-nerd-fonts-symbols 3.1.1-1
+ttf-nerd-fonts-symbols-mono 3.1.1-1
+ttf-noto-nerd 3.1.1-1
+ttf-profont-nerd 3.1.1-1
+ttf-proggyclean-nerd 3.1.1-1
+ttf-roboto 2.138-4
+ttf-roboto-mono-nerd 3.1.1-1
+ttf-sharetech-mono-nerd 3.1.1-1
+ttf-sourcecodepro-nerd 3.1.1-1
+ttf-space-mono-nerd 3.1.1-1
+ttf-terminus-nerd 3.1.1-1
+ttf-tinos-nerd 3.1.1-1
+ttf-ubuntu-mono-nerd 3.1.1-1
+ttf-ubuntu-nerd 3.1.1-1
+ttf-victor-mono-nerd 3.1.1-1
+upd72020x-fw 1:1.0.0-2
+vlc 3.0.20-2
+wd719x-firmware 1-7
+wget 1.21.4-1
+wireless_tools 30.pre9-3
+wpa_supplicant 2:2.10-8
+xournalpp 1.2.2-1
+xwallpaper 0.7.4-1
+zram-generator 1.1.2-1
+# -------------------------------------------------------------------------------
+# 
+# 
+# - 1) The list of explicitly-installed packages can be shown with pacman -Qe, while the complementary list of dependencies can be shown with pacman -Qd.
+# - 2) When installing a package, it is possible to force its installation reason to 'dependency' with:
+#      pacman -S --asdeps package_name
+#      Tip: Installing optional dependencies with --asdeps will ensure that, if you 'remove orphans', pacman will also remove optional packages set this way.
+# - 3) 
+
+
