@@ -1,11 +1,8 @@
 #!/usr/bin/env bash
 #
 # My Arch Linux Install Script (malis)
+# Startup file for my cusom OS installation on my PC.
 #
-# <2023-11-26> _ Base file to create script for my cusom OS installation
-# this version is for monolith script to decompose further
-#
-
 # * Current todo [2023-12-02]
 # TODO [0/7]
 # - [ ] #dev: ? LOG functional;
@@ -23,22 +20,17 @@
 # - [ ] check syntax in 'sed' (use "s/pattern-find/pattarn-replace/" or "s|pattern-find|pattarn-replace|")
 #
 #
-# #############################################################################################################
-#
 # ---- SCRIPT SELF PREPARATION ----
-# ## x - display command before executing
-# ## e - script stops on error
-# ## u - error if undefined variable
-# ## o pipefail - script fails if command piped fails
-#
 set -euo pipefail
+# x - display command before executing
+# e - script stops on error
+# u - error if undefined variable
+# o pipefail - script fails if command piped fails
 # -- for debugging
 # set -xeuo pipefail
 #
-##############################################
-# | STAGE-00 | - PREPARATIONS;
-##############################################
 #
+# ---- | STAGE-00 | - PREPARATIONS;
 #
 function init_config() {
     local COMMONS_FILE="malis-commons__v01.sh"
@@ -47,34 +39,11 @@ function init_config() {
     source "$COMMONS_FILE"
     source "$COMMONS_CONF_FILE"
     source "$MALIS_CONF_FILE"
-    # source "$MESSAGES_FILE"
+    source "$MALIS_MESSAGES_FILE"
 }
-
 #
-#
-# ---- COMMON STATIC VARIABLES | [TEST: OK] ----
-#
-function def_script_variables() {
-  RUN_SCRIPT_DIRECTORY="$(pwd)"
-  ANCOR_SCRIPT_DIRECTORY="$HOME/malis"
-  USER_CONFIG_DIRECTORY="$HOME/.config"
-  USER_FONTS_DIRECTORY="/usr/share/fonts"
-  USER_SCRIPTS_DIRECTORY="/usr/local/bin"
-  # -- also see 'malis-commons.sh'
-  # -- color
-  RED="\033[0;91m"
-  GREEN="\033[0;92m"
-  BLUE="\033[0;96m"
-  WHITE="\033[0;97m"
-  NC="\033[0m"
-}
 #
 # ---- CHECK CURRENT RUN DIRECTORY WITH ANCOR DIRECTORY ($HOME/malis) | [TEST: OK] ----
-# ---- NOTE: from [2023-12-02] NOT IN USE.
-#      Expedience depends from 'cd' behavior. Develop other stuff and make
-#      a desigion about usage. Also, decide what to do if current run is not from
-#      ancor directory.
-# -- TODO: Make a decision. Develop appropriete scenarios. Include in malis-messages.sh.
 function check_ancor_dir() {
   echo " ---- if you need it - develop me more: 'check_ancor_dir' ----"
   if [ $RUN_SCRIPT_DIRECTORY == $ANCOR_SCRIPT_DIRECTORY ]; then
@@ -88,24 +57,29 @@ function check_ancor_dir() {
     exit 1
     # TODO: dialor and autocopy to ancor dir
   fi
+# ---- NOTE: from [2023-12-02] NOT IN USE.
+#      Expedience depends from 'cd' behavior. Develop other stuff and make
+#      a desigion about usage. Also, decide what to do if current run is not from
+#      ancor directory.
+# -- TODO: Make a decision. Develop appropriete scenarios. Include in malis-messages.sh.
 }
 #
-#
-# ---- INCLUDE MESSAGES FILE | [TEST: OK]----
+# ---- TODO: check access to files | [TEST: TODO] ----
+#function checkout_files() {
+#    local f1="$RUN_SCRIPT_DIRECTORY/$MALIS_MESSAGES_FILE"
+#    if [ -f $MALIS_MESSAGES_FILE ]; then
+#        source "$MALIS_MESSAGES_FILE"
+#    else
+#        # echo -e "${RED}-- (!) ERROR:${NC} MISSING $(MSG_FILE) TO SOURCE."
+#        echo -e "${RED}-- (!) ERROR:${NC} * ${BLUE}MISSING${NC} ${GREEN}${MSG_FILE}${NC} ${BLUE}TO SOURCE.${NC} *"
+#        echo -e "${RED}-- CHECK SCRIPT STARTUP DIRECTORY: --${NC}"
+#        pwd | ls -la
+#        echo -e "---- ---- STOP ---- ----"
+#        exit 1
+#    fi
 # source ./malis-messages.sh         # direct command
-function source_msg() {
-    local MSG_FILE="$RUN_SCRIPT_DIRECTORY/malis-messages__v01.sh"
-    if [ -f $MSG_FILE ]; then
-        source "$MSG_FILE"
-    else
-        # echo -e "${RED}-- (!) ERROR:${NC} MISSING $(MSG_FILE) TO SOURCE."
-        echo -e "${RED}-- (!) ERROR:${NC} * ${BLUE}MISSING${NC} ${GREEN}${MSG_FILE}${NC} ${BLUE}TO SOURCE.${NC} *"
-        echo -e "${RED}-- CHECK SCRIPT STARTUP DIRECTORY: --${NC}"
-        pwd | ls -la
-        echo -e "---- ---- STOP ---- ----"
-        exit 1
-    fi
-}
+#}
+#
 #
 # ---- ECHO WELCOME MESSAGE | [TEST: OK]
 function msg_welcome() {
@@ -147,9 +121,7 @@ function configure_time() {
   echo "$msg_st00_6"
 }
 #
-# ---- RU locale, keyboard [TEST: OK]
-# -- NOTE: Need to execute of main script (mail.sh) as root at the begining;
-#          'ask_root' function does not solve access as root to '/etc/local.gen'.
+# ---- RU locale, keyboard [TEST: OK] (!) need root execution for whole script;
 function ru_locale() {
   # v1: simple as a nail;
   # sudo echo "ru_RU.UTF-8 UTF-8" >> /etc/locale.gen
@@ -161,12 +133,14 @@ function ru_locale() {
   touch $HOME/.xinitrc
   echo "setxkbmap -lauout us,ru -option grp:caps_toggle" >> $HOME/.xinitrc
   echo "$msg_st00_7"
-}
   # NOTE: [2023-12-03] #MY. Two arrows in Emacs (electric-mode) insert symbols "EOF (end of file)"
   #       and crash reading of a whole script. Switching 'sh-electric-here-document-mode'
   #       gives nothing. Strange bullshit. Possible solution - set "<<<", but
   #       i rewrite command to be a single call of 'sed'.
   # sudo sed -i -e "s|#ru_RU.UTF-8|ru_RU.UTF-8|" << /etc/locale.gen
+# -- NOTE: Need to execute of main script (mail.sh) as root at the begining;
+#          'ask_root' function does not solve access as root to '/etc/local.gen'.
+}
 #
 # ---- SETUP PACMAN | [TEST: TODO]
 #
@@ -189,16 +163,14 @@ function setup_pacman() {
     #? sudo \cp "$script_folder/pacman.conf" /etc/
 }
 #
-##############################################
 # ---- STAGE_00 EXEC-FUNCTION ----
 #
 function stage_00() {
-  def_script_variables
-  source_msg
   msg_welcome
   ask_sudo
   configure_time
   ru_locale
+  setup_pacman
 }
 #
 # TODO: develop & add in stage_00:
@@ -208,11 +180,9 @@ function stage_00() {
 #     # save package list: pacman -Q > $HOME/pkg_list__start_point.txt
 #     # count packages:  pacman -Q | wc -l >> $HOME/pkg_list__start_point.txt
 #
-##############################################
-# ---- STAGE-01 ----
-##############################################
 #
-##############################################
+# ---- STAGE-01 ----
+#
 # ---- STAGE_01 EXEC-FUNCTION ----
 #
 function stage_01() {
@@ -290,19 +260,6 @@ echo ""
 #
 #
 #
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
 ##############################################
 # ---- STAGE_00 EXEC-FUNCTION ----
 #
@@ -310,9 +267,6 @@ echo ""
 function stage_02() {
   missing_firmware
 }
-#
-#
-#
 #
 #
 #
@@ -327,13 +281,30 @@ function stage_02() {
 #
 #
 function main() {
-  init_config
-  stage_00
-  stage_01
-  stage_02
+    local START_TIMESTAMP=$(date -u +"%F %T")
+    init_config
+
+    execute_step "sanitize_variables"
+    execute_step "check_variables"
+
+
+
+
+    execute_step "stage_00"
+    execute_step "stage_01"
+    execute_step "stage_02"
+
+
+
+
+
+    local END_TIMESTAMP=$(date -u +"%F %T")
+    local INSTALLATION_TIME=$(date -u -d @$(($(date -d "$END_TIMESTAMP" '+%s') - $(date -d "$START_TIMESTAMP" '+%s'))) '+%T')
+    echo -e "Installation start ${WHITE}$START_TIMESTAMP${NC}, end ${WHITE}$END_TIMESTAMP${NC}, time ${WHITE}$INSTALLATION_TIME${NC}"
+    execute_step "end"
 }
 #
-main
+main "$@"
 #
 ##############################################
 ##############################################

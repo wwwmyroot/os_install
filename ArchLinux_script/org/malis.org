@@ -3,7 +3,7 @@
 #+date: [2023-12-02]
 
 * Current todo [2023-12-02]
-TODO [0/7]
+TODO [0/8]
 - [ ] #dev: LOG functional;
 - [ ] #dev: additional info about packages for every stage;
 - [ ] #DEFINE_ArchInstall: [0/4]
@@ -17,6 +17,7 @@ TODO [0/7]
 - [ ] global execution as root is needed to function 'ru_locale'.
       It needs an access to '/etc/locale.gen' and func 'ask_sudo' has no effect to command 'sed');
 - [ ] check syntax in 'sed' (use "s/pattern-find/pattarn-replace/" or "s|pattern-find|pattarn-replace|")
+- [ ] #dev: cycle to check access to all nesessary files (.sh, .cofig);
 
 
 
