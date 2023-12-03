@@ -3,108 +3,131 @@
 #+date: [2023-12-02]
 
 * Current todo [2023-12-02]
-TODO [0/5]
+TODO [0/7]
 - [ ] #dev: LOG functional;
 - [ ] #dev: additional info about packages for every stage;
 - [ ] #DEFINE_ArchInstall: [0/4]
-  - [ ] define what packages to install with official installer;
+  - [ ] save .json from official installer;
   - [ ] get list of missing firmware on PC;
   - [ ] may be 'base' 'curl' 'make' are already installed by official installation;
-  - [ ] get & save .json from official installer;
+  - [ ] define what packages to install with official installer;
+    : candidates: curl make cmake base base-devel lha linux-firmware linux-firmware-qlogic git
 - [ ] discover how to echo string to a proper section of a file (maybe "sed");
 - [ ] #maybe: ? colorise messages ?
+- [ ] global execution as root is needed to function 'ru_locale'.
+      It needs an access to '/etc/locale.gen' and func 'ask_sudo' has no effect to command 'sed');
+- [ ] check syntax in 'sed' (use "s/pattern-find/pattarn-replace/" or "s|pattern-find|pattarn-replace|")
 
 
 
 * # ---- List of packages ----
 
 # ---- ABOUT PACKAGES ----
-# ---- 0). additional packages during install (insert manually):
+** ---- 0). additional packages during install (insert manually):
 #
 #
-# ---- 1). list of hardware packages ----
-# ## ---- INTEL drivers for PC (microcode);
+** ---- 1). list of hardware packages
+*** ## -- Missing firmware
+linux-firmware linux-firmware-qlogic (from Arch repo)
+aic94xx-firmware wd719x-firmware upd72020x-fw (from AUR manually)
+*** ## -- INTEL drivers for PC (microcode);
+mesa
+
+*** ## -- VIDEO drivers for PC (NVIDIA 250);
 #
 #
-# ## ---- VIDEO drivers for PC (NVIDIA 250);
+*** ## -- AUDIO drivers for PC (pipeware);
 #
 #
-# ## ---- AUDIO drivers for PC (pipeware);
+*** ## -- WACOM drivers for PC (Wacom Intuos Pro)
 #
 #
-# ## ---- WACOM drivers for PC (Wacom Intuos Pro)
+** ---- 2). list of base packages (system-wide "evergreens")
+*** ## -- system
+base base-devel
+linux linux-headers
+linux-firmware
+#
+|? ntfs-3g
+*** ## -- cmd line tools
+curl wget
+git
+make cmake
+zip unzip unrar p7zip
+tree htop neofetch
+#
+|? bash-completion less
+|? scrot nnn
 #
 #
-# ---- 2). list of base packages (system-wide "evergreens")
-# ## -- system
-# base base-devel linux linux-firmware linux-headers
+*** ## -- cmd editor
+nvim
+
+*** ## -- cmd line media
+ffmpeg yt-dlp zathura mpv
 #
-# ### -- ?? ntfs support ?
-# |? ntfs-3g
+|? feh
 #
-# ## -- cmd line tools
-# make cmake
-# git wget curl
-# zip unzip unrar p7zip
-# tree htop neofetch
-# |? bash-completion less
-# |? scrot feh nnn
+*** ## -- media
+vlc
 #
 #
-# -- cmd line media
-# ffmpeg yt-dlp zathura
+*** ## --- ssh, vpn
+openssh openvpn
 #
 #
-# ## --- ssh, vpn
-# openssh openvpn
+*** ## -- Xorg
+xorg xorg-server xorg-xrandr
+xclip
 #
 #
-# ## -- Xorg
-# xorg xorg-server xorg-xrandr
-# xclip
+*** ## -- main terminal emulator
+kitty
+#
+*** ## -- sys use
+dmenu
+#
+|? xwallpaper
+# #
+# #
+*** ## -- for Emacs
+fd ripgrep
 #
 #
-# ## -- main terminal emulator
-# kitty
+** ---- 3). System-wide software
+*** ## -- actual
+neovim
+elinks |? firefox chromium
+font-manager
+gimp obs-studio
+emacs-nativecomp (-> doom emacs)
 #
-# ## -- sys use
-# dmenu
-# |? xwallpaper
+*** ## -- optional or postponed
 #
+**** -- terminal multiplexer
 #
-# ## -- for Emacs
-# fd ripgrep
+|? tmux
 #
-# ---- 3). System-wide software
-# neovim                                # --- neovim
-# elinks firefox                        # --- browser
-# font-manager                          # --- OS tool
-# gimp obs-studio mpv                   # --- media
-# emacs-nativecomp                      # --- emacs
-#
-# ???? -- optional or postponed --
-# tmux                                  # --- terminal multiplexer *2)
-#
-# ---- 1.2.) Setup base soft
+*** ## -- 1.2.) Setup base soft
 # AIM: manage settings via dotfiles
 # .. .. .. .. .. .. .. .. .. ..
 # .. .. .. .. .. .. .. .. .. ..
 # .. .. .. .. .. .. .. .. .. ..
 #
 #
-#---- 2.1.) list of second packages ----
+*** ## -- 2.1.) list of second packages
 #
 #
 #
 #
-# ---- 2.2.) Setup second soft ----
+*** ## -- 2.2.) Setup second soft
 # AIM: mamnsge settings via dotfiles
 # .. .. .. .. .. .. .. .. .. ..
 # .. .. .. .. .. .. .. .. .. ..
 # .. .. .. .. .. .. .. .. .. ..
 #
-# ---- III) list of second packages ----
-# -- for 'nnn', terminal file manager
+** ---- 4) list of second packages
+*** ## -- for 'nnn', terminal file manager
 # zathura libspectre zatura-cb          # --- for 'nnn' plugin 'nuke' to view documents
 # zathura-djvu zathura-pdf-mupdf        # --- for 'nnn' plugin 'nuke' to view documents
 # zathura-ps                            # --- for 'nnn' plugin 'nuke' to view documents
@@ -118,8 +141,9 @@ TODO [0/5]
 # plugin manager: https://github.com/tmux-plugins/tpm
 #
 # - to read: https://github.com/rothgar/awesome-tmux
-#
-#
+
+
+
 * # ---- BRIF ABOUT : ----
 
 # <2023-11-26> _ Base file to create script for my cusom OS installation
@@ -200,6 +224,63 @@ function execute_step() {
     local STEP="$1"
     eval "$STEP"
 }
+
+#+end_src
+** ---- #NAIL_01 (loop dir & run)
+#+begin_src shell
+
+# ---- DONE: fix this #NAIL_01:
+# install with makepkg with download missing stuff and installing in one cmd
+# ( alternative:
+#   makepkg && sudo pacman -U --noconfirm --needed <TOFIX: name of file (.zst)>
+# )
+cd ~/tmp-firmware/aic94xx-firmware
+makepkg
+sudo pacman -U --noconfirm --needed aic94xx-firmware-30-10-any.pkg.tar.zst
+echo ""
+cd ~/tmp-firmware/wd719x-firmware
+makepkg
+sudo pacman -U --noconfirm --needed wd719x-firmware-1-7-any.pkg.tar.zst
+echo ""
+cd ~/tmp-firmware/upd72020x-fw
+sudo pacman -U --noconfirm --needed upd72020x-fw-1\:1.0.0-2-any.pkg.tar.zst
+echo ""
+#
+#
+# Target behavior:
+# -> makepkg
+# -> sudo pacman -U <.....>.zst
+# -- v1:
+#
+for d in ./*/ ; do (cd "$d" && make && sudo pacman -U "<...TOFIX name of pkg in loop...>"); done
+#
+# -- v2:
+#
+for D in ./*; do
+   if [ -d "$D" ]; then
+       cd "$D"
+       run_something
+       cd ..
+   fi
+done
+#
+#
+# -- v2-1
+for i in `ls -d ./*/`
+do
+    cd "$i"
+    command
+    cd ..
+done
+#
+# -- v3:
+#
+cd -P .
+for dir in ./*/
+do cd -P "$dir" ||continue
+   printf %s\\n "$PWD" >&2
+   command && cd "$OLDPWD" || ! break; done || ! cd - >&2
+#
 
 #+end_src
 
@@ -937,16 +1018,16 @@ Script have to automate steps after installing Arch Linux on my PC.
 ### Overview
 
 ##### Script have to (general workflow) :
-* **01. Upgrade/update system after installation.**
-* **02. Make base system-wide configurations.**
-* **03. Prepare infrastructure and install main packages (base env);**
-* **04. Configure main packages with user dotfiles (base env);**
-* **05. Prepare infrastructure, install VM and environments managers;**
-* **06. Install and configure user environments and VM-s;**
-* **07. Install and configure current active project environments and VM-s;**
+ **01. Upgrade/update system after installation.**
+ **02. Make base system-wide configurations.**
+ **03. Prepare infrastructure and install main packages (base env);**
+ **04. Configure main packages with user dotfiles (base env);**
+ **05. Prepare infrastructure, install VM and environments managers;**
+ **06. Install and configure user environments and VM-s;**
+ **07. Install and configure current active project environments and VM-s;**
 
 ##### Workflow details
-* **00. Arch Linux official installer finished succesfully.**
+ **00. Arch Linux official installer finished succesfully.**
   - only official installer ("archlinux install");
   - GRUB;
   - locale: "US";
@@ -957,18 +1038,18 @@ Script have to automate steps after installing Arch Linux on my PC.
   - ? NOTE: get json after official installer setup;
   - ?
 
-* **01. Base system config ('first steps').**
+ **01. Base system config ('first steps').**
 
   - update keyring;
   - partial update;
   - system update/upgrade;
   - ? ...
 
-* **02. Setup timeserver, enable nth-server as a service.**
+ **02. Setup timeserver, enable nth-server as a service.**
 
-* **03. Install X11, x-server.**
+ **03. Install X11, x-server.**
 
-* **04. Install Intel microcode.**
+ **04. Install Intel microcode.**
 
   - ? upgrade grub ->? reboot ?
 
@@ -977,7 +1058,7 @@ grub install ...                # define
 grub-mkconfig -o /boot/grub.cfg
 ```
 
-* **05. Install solutions for unknown devices [2023-11-29].**
+ **05. Install solutions for unknown devices [2023-11-29].**
 
 ```sh
   gla2xx -> pkg "linux-firmware-qlogic";
@@ -989,28 +1070,28 @@ grub-mkconfig -o /boot/grub.cfg
   xhpci_pci *->* _AUR_ "upd72020x-fw"
 ```
 
-* **04. Install Nvidia drivers.**
+ **04. Install Nvidia drivers.**
 
-* **05. Install wacom drivers ( ? and soft ? ).**
+ **05. Install wacom drivers ( ? and soft ? ).**
 
-* **06. Install locale "RU".**
+ **06. Install locale "RU".**
 
 ```shell
 touch ~/.xinitrc
 echo "setxkbmap -layout us,ru -option grp:caps_toggle" >> .xinitrc
 ```
 
-* **06. Install fonts.**
+ **06. Install fonts.**
 
-* **07. Install packages for base environment ('evergreens').**
+ **07. Install packages for base environment ('evergreens').**
 
-* **08. Setup packages for base environment (load and place dotfiles).**
+ **08. Setup packages for base environment (load and place dotfiles).**
 
-* **09. Install environment manager (miniconda3).**
+ **09. Install environment manager (miniconda3).**
 
-* **10. Install and setup environments.**
+ **10. Install and setup environments.**
 
-* **11. ? ...**
+ **11. ? ...**
 
 Workflow devided into **STAGES**.
 Stages, which needs reboot, are located in **separate scripts**.
@@ -1053,3 +1134,4 @@ git push -u origin master
 ``` sh
 git@notabug.org:myroot/os_install.git
 ```
+**

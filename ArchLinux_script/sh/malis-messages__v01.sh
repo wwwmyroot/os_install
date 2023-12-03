@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 #
 # -- color
 # RED="\033[0;91m"
@@ -33,22 +33,22 @@ msg_001_plan="
 -----------------------------------------------
 "
 # -- START STAGE
-msg_st00_0="---- |STAGE-00 START| PREPARATION ---- "
-msg_st01_0="---- |STAGE-01 START| UPDATE KEYRING AND SYSTEM; ---- "
-msg_st02_0="---- |STAGE-02 START| INSTALL BASE PKG AND DRIVERS; ---- "
-msg_st03_0="---- |STAGE-03 START| BASE CONFIGURATION AND SETTINGS; ---- "
-msg_st04_0="---- |STAGE-04 START| INSTALL AND CONFIG SYSTEM-WIDE PKG; ---- "
-msg_st05_0="---- |STAGE-05 START| INSTALL ENVIRONMENTS MANAGERS; ---- "
-msg_st06_0="---- |STAGE-06 START| INSTALL ENVIRONMENTS; ---- "
+msg_st00_0="---- | STAGE-00 START | PREPARATION ---- "
+msg_st01_0="---- | STAGE-01 START | UPDATE KEYRING AND SYSTEM; ---- "
+msg_st02_0="---- | STAGE-02 START | INSTALL BASE PKG AND DRIVERS; ---- "
+msg_st03_0="---- | STAGE-03 START | BASE CONFIGURATION AND SETTINGS; ---- "
+msg_st04_0="---- | STAGE-04 START | INSTALL AND CONFIG SYSTEM-WIDE PKG; ---- "
+msg_st05_0="---- | STAGE-05 START | INSTALL ENVIRONMENTS MANAGERS; ---- "
+msg_st06_0="---- | STAGE-06 START | INSTALL ENVIRONMENTS; ---- "
 #
 # -- FINISH STAGE -- OK
-msg_st00_f="---- |STAGE-00 FINISH| PREPARATION ---- "
-msg_st01_f="---- |STAGE-01 FINISH| UPDATE KEYRING AND SYSTEM; ---- "
-msg_st02_f="---- |STAGE-02 FINISH| INSTALL BASE PKG AND DRIVERS; ---- "
-msg_st03_f="---- |STAGE-03 FINISH| BASE CONFIGURATION AND SETTINGS; ---- "
-msg_st04_f="---- |STAGE-04 FINISH| INSTALL AND CONFIG SYSTEM-WIDE PKG; ---- "
-msg_st05_f="---- |STAGE-05 FINISH| INSTALL ENVIRONMENTS MANAGERS; ---- "
-msg_st06_f="---- |STAGE-06 FINISH| INSTALL ENVIRONMENTS; ---- "
+msg_st00_f="---- | STAGE-00 FINISH | PREPARATION ---- "
+msg_st01_f="---- | STAGE-01 FINISH | UPDATE KEYRING AND SYSTEM; ---- "
+msg_st02_f="---- | STAGE-02 FINISH | INSTALL BASE PKG AND DRIVERS; ---- "
+msg_st03_f="---- | STAGE-03 FINISH | BASE CONFIGURATION AND SETTINGS; ---- "
+msg_st04_f="---- | STAGE-04 FINISH | INSTALL AND CONFIG SYSTEM-WIDE PKG; ---- "
+msg_st05_f="---- | STAGE-05 FINISH | INSTALL ENVIRONMENTS MANAGERS; ---- "
+msg_st06_f="---- | STAGE-06 FINISH | INSTALL ENVIRONMENTS; ---- "
 
 # -- Stage_00
 msg_st00_1="---- DEFINING VARIABLES ----"
@@ -68,7 +68,7 @@ msg_st01_5="---- SYSTEM PARTIAL UPDATE DONE (5/6) OK ----"
 msg_st01_6="---- SYSTEM UPDATE DONE (6/6) OK ----"
 msg_st01_7="----  ----"
 msg_st01_8="----  ----"
-#:w
+#
 #
 # -- Stage_02
 msg_st02_1="---- MISSING FIRMWARE TO INSTALL [2023-12-02]:
@@ -92,11 +92,17 @@ msg_st02_1="---- MISSING FIRMWARE TO INSTALL [2023-12-02]:
 
 NOTE: package <lah> is needed to unpack, it will be installed;
 "
-msg_st02_2="---- Installing 'linux-firmware' from Arch repo DONE (1/10) ----"
-msg_st02_3="---- Installing 'linux-firmware-qlogic' DONE (2/10) OK ----"
-msg_st02_4="---- Installing 'curl make cmake base base-devel lah' DONE (3/10) OK ----"
-msg_st02_5="---- Installing 'aic94xx-firmware' from AUR DONE (4/10) OK ----"
-msg_st02_6="---- Installing 'wd719x-firmware' from AUR DONE (5/10) OK ----"
-msg_st02_7="---- Installing 'upd72020x-fw' from AUR DONE (6/10) OK ----"
+msg_st02_2="---- Installing 'linux-firmware' from Arch repo DONE (1/6) ----"
+msg_st02_3="---- Installing 'linux-firmware-qlogic' DONE (2/6) OK ----"
+msg_st02_4="---- Installing 'curl make cmake base base-devel lha' DONE (3/6) OK ----"
+msg_st02_5="---- Making lockal pakage from .tar and installing.
+---- NOTE: Will need USER CONFIRMATION during install. ----"
+msg_st02_6="---- Installing of package is DONE OK ----"
+msg_st02_7="---- Installing 'aic94xx-firmware wd719x-firmware upd72020x-fw' from AUR DONE (6/6) OK ----"
+#
+#
+# -- Stage_03
+
+
 msg_st02_="----  DONE (5/10) OK ----"
 msg_st02_="----  DONE (6/10) OK ----"

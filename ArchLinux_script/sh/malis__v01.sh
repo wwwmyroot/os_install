@@ -1,21 +1,26 @@
-#!/bin/bash
+#!/usr/bin/env bash
+#
+# My Arch Linux Install Script (malis)
 #
 # <2023-11-26> _ Base file to create script for my cusom OS installation
 # this version is for monolith script to decompose further
 #
 
 # * Current todo [2023-12-02]
-# TODO [0/5]
-# - [ ] #dev: LOG functional;
-# - [ ] #dev: additional info about packages for every stage;
-# - [ ] #DEFINE_ArchInstall: [0/4]
-#   - [ ] define what packages to install with official installer;
-#   - [ ] get list of missing firmware on PC;
+# TODO [0/7]
+# - [ ] #dev: ? LOG functional;
+# - [ ] #dev: ? additional info about packages for every stage;
+# - [ ] #define: After official installer [0/4]
+#   - [ ] save .json from official installer;
+#   - [ ] get list of missing firmware after official install on PC;
 #   - [ ] may be 'base' 'curl' 'make' are already installed by official installation;
-#   - [ ] get & save .json from official installer;
+#   - [ ] what packages to install with official installer;
+#         : candidates: curl make cmake base base-devel lha linux-firmware linux-firmware-qlogic
 # - [ ] discover how to echo string to a proper section of a file (maybe "sed");
 # - [ ] #maybe: ? colorise messages ?
-#
+# - [ ] global execution as root is needed to function 'ru_locale'.
+#       It needs an access to '/etc/locale.gen' and func 'ask_sudo' has no effect to command 'sed');
+# - [ ] check syntax in 'sed' (use "s/pattern-find/pattarn-replace/" or "s|pattern-find|pattarn-replace|")
 #
 #
 # #############################################################################################################
@@ -34,23 +39,29 @@ set -euo pipefail
 # | STAGE-00 | - PREPARATIONS;
 ##############################################
 #
-# ---- COMMON STATIC VARIABLES ----
+#
+function init_config() {
+    local COMMONS_FILE="malis-commons__v01.sh"
+    # local MESSAGES_FILE="malis-messages__v01.sh"
+
+    source "$COMMONS_FILE"
+    source "$COMMONS_CONF_FILE"
+    source "$MALIS_CONF_FILE"
+    # source "$MESSAGES_FILE"
+}
+
+#
+#
+# ---- COMMON STATIC VARIABLES | [TEST: OK] ----
 #
 function def_script_variables() {
   RUN_SCRIPT_DIRECTORY="$(pwd)"
+  ANCOR_SCRIPT_DIRECTORY="$HOME/malis"
   USER_CONFIG_DIRECTORY="$HOME/.config"
   USER_FONTS_DIRECTORY="/usr/share/fonts"
   USER_SCRIPTS_DIRECTORY="/usr/local/bin"
-  # -- NOTE: maybe set this filnames:
-  # RUN_SCRIPT_CONF_FILE="install__script.conf"
-  # RUN_SCRIPT_LOG_FILE="install__script.log"
-  # RECOVERY_CONF_FILE="install__recovery.conf"
-  # RECOVERY_LOG_FILE="install__recovery.log"
-  # PACKAGES_CONF_FILE="install__packages.conf"
-  # PACKAGES_LOG_FILE="install__packages.log"
-  # COMMONS_CONF_FILE="install__commons.conf"
-  # PROVISION_DIRECTORY="$RUN_SCRIPT_DIRECTORY/files/"
-  # # -- color
+  # -- also see 'malis-commons.sh'
+  # -- color
   RED="\033[0;91m"
   GREEN="\033[0;92m"
   BLUE="\033[0;96m"
@@ -58,16 +69,37 @@ function def_script_variables() {
   NC="\033[0m"
 }
 #
-# ---- INCLUDE MESSAGES FILE ----
-# source ./messages.sh         # direct command
+# ---- CHECK CURRENT RUN DIRECTORY WITH ANCOR DIRECTORY ($HOME/malis) | [TEST: OK] ----
+# ---- NOTE: from [2023-12-02] NOT IN USE.
+#      Expedience depends from 'cd' behavior. Develop other stuff and make
+#      a desigion about usage. Also, decide what to do if current run is not from
+#      ancor directory.
+# -- TODO: Make a decision. Develop appropriete scenarios. Include in malis-messages.sh.
+function check_ancor_dir() {
+  echo " ---- if you need it - develop me more: 'check_ancor_dir' ----"
+  if [ $RUN_SCRIPT_DIRECTORY == $ANCOR_SCRIPT_DIRECTORY ]; then
+  continue
+  else
+    echo "---- ERROR: Script is started NOT from ANCOR DIRECTIRY. ----"
+    echo "---- Current directory is:\n * $RUN_SCRIPT_DIRECTORY \n* ----"
+    echo "---- Ancor directory have to be: * '\$HOME/malis' * ----"
+    echo "---- Create '~/malis', copy all stuff there and run 'malis.sh' from ancor directory. ----"
+    echo "---- EXITING ----"
+    exit 1
+    # TODO: dialor and autocopy to ancor dir
+  fi
+}
 #
+#
+# ---- INCLUDE MESSAGES FILE | [TEST: OK]----
+# source ./malis-messages.sh         # direct command
 function source_msg() {
-    local MSG_FILE="$RUN_SCRIPT_DIRECTORY/messages.sh"
+    local MSG_FILE="$RUN_SCRIPT_DIRECTORY/malis-messages__v01.sh"
     if [ -f $MSG_FILE ]; then
         source "$MSG_FILE"
     else
         # echo -e "${RED}-- (!) ERROR:${NC} MISSING $(MSG_FILE) TO SOURCE."
-        echo -e "${RED}-- (!) ERROR:${NC} * ${BLUE}MISSING${NC} ${GREEN}${MSG_FILE1}${NC} ${BLUE}TO SOURCE.${NC} *"
+        echo -e "${RED}-- (!) ERROR:${NC} * ${BLUE}MISSING${NC} ${GREEN}${MSG_FILE}${NC} ${BLUE}TO SOURCE.${NC} *"
         echo -e "${RED}-- CHECK SCRIPT STARTUP DIRECTORY: --${NC}"
         pwd | ls -la
         echo -e "---- ---- STOP ---- ----"
@@ -75,7 +107,7 @@ function source_msg() {
     fi
 }
 #
-# ---- ECHO WELCOME MESSAGE | [TEST:OK]
+# ---- ECHO WELCOME MESSAGE | [TEST: OK]
 function msg_welcome() {
   echo -e "$msg_line"
   echo -e "$msg_001_plan"
@@ -89,7 +121,21 @@ function ask_sudo() {
   sudo pwd >> /dev/null
 }
 #
-# ---- CONFIGURE TIME | [TEST: TODO]
+# ---- TOCHECK: execute sudo
+# /mnt/hdd3/AL/0W/My_OS_Install_Script/example/alis/alis-commons.sh
+#
+# function execute_sudo() {
+#     local COMMAND="$1"
+#     if [ "$SYSTEM_INSTALLATION" == "true" ]; then
+#         arch-chroot "${MNT_DIR}" bash -c "$COMMAND"
+#     else
+#         sudo bash -c "$COMMAND"
+#     fi
+# }
+# ---- end TOCHECK ----
+#
+#
+# ---- CONFIGURE TIME | [TEST: OK]
 function configure_time() {
   echo "$msg_st00_4"
   timedatectl status
@@ -101,18 +147,26 @@ function configure_time() {
   echo "$msg_st00_6"
 }
 #
-# ---- RU locale, keyboard [TEST: TODO]
-#
+# ---- RU locale, keyboard [TEST: OK]
+# -- NOTE: Need to execute of main script (mail.sh) as root at the begining;
+#          'ask_root' function does not solve access as root to '/etc/local.gen'.
 function ru_locale() {
-  sudo echo "ru_RU.UTF-8 UTF-8" >> /etc/locale.gen
-  # :OR:
-  # sudo sed -i -e "s|#ru_RU.UTF-8|ru_RU.UTF-8|" << /etc/locale.gen
+  # v1: simple as a nail;
+  # sudo echo "ru_RU.UTF-8 UTF-8" >> /etc/locale.gen
+  # v2: more elegant
+  sudo sed -i -e "s|#ru_RU.UTF-8|ru_RU.UTF-8|" "/etc/locale.gen"
+  #
   sudo locale-gen
-  cd $HOME
-  touch .xinitrc
-  echo "setxkbmap -lauout us,ru -option grp:caps_toggle" >> .xinitrc
+  # cd $HOME
+  touch $HOME/.xinitrc
+  echo "setxkbmap -lauout us,ru -option grp:caps_toggle" >> $HOME/.xinitrc
   echo "$msg_st00_7"
 }
+  # NOTE: [2023-12-03] #MY. Two arrows in Emacs (electric-mode) insert symbols "EOF (end of file)"
+  #       and crash reading of a whole script. Switching 'sh-electric-here-document-mode'
+  #       gives nothing. Strange bullshit. Possible solution - set "<<<", but
+  #       i rewrite command to be a single call of 'sed'.
+  # sudo sed -i -e "s|#ru_RU.UTF-8|ru_RU.UTF-8|" << /etc/locale.gen
 #
 # ---- SETUP PACMAN | [TEST: TODO]
 #
@@ -124,9 +178,9 @@ function setup_pacman() {
     # CheckSpace                # -> ? uncomment if default is commented;
     # VerbosePkgLists           # -> uncomment;
     # ParallelDownloads = 50    # uncomment and set to "50";
-    # sudo sed -i "s/#Color/Color/" /etc/pacman.conf
-    # sudo sed -i "s/#CheckSpace/CheckSpace/" /etc/pacman.conf
-    # sudo sed -i "s/#ParallelDownloads = 5/ParallelDownloads = 50/" /etc/pacman.conf
+    sudo sed -i "s|#Color|Color|" "/etc/pacman.conf"
+    sudo sed -i "s|#CheckSpace|CheckSpace|" "/etc/pacman.conf"
+    sudo sed -i "s|#ParallelDownloads = 5|ParallelDownloads = 50|" "/etc/pacman.conf"
     #
     #
     # -- v2:
@@ -158,6 +212,9 @@ function stage_00() {
 # ---- STAGE-01 ----
 ##############################################
 #
+##############################################
+# ---- STAGE_01 EXEC-FUNCTION ----
+#
 function stage_01() {
   echo -e "$msg_st01_0"
   # init keys;
@@ -185,7 +242,7 @@ function stage_01() {
 # ---- STAGE-02 ----
 ##############################################
 #
-# ---- SOLVE ERRORS FOR MISSING FIRMWARE | [TEST: TODO]----
+# ---- SOLVE ERRORS FOR MISSING FIRMWARE | [TEST: OK]----
 #
 # see: /mnt/hdd3/AL/MyNotes/notes/00_rebase/soft/01_OS_install/PossiblyMissingFirmware.org
 # TODO: explore what hardware are missing at PC after installation;
@@ -200,7 +257,7 @@ function missing_firmware() {
   sudo pacman -S --noconfirm --needed linux-firmware-qlogic
   echo -e "${msg_st02_3}"
   # NOTE: may be 'base' 'curl' 'make' are already installed
-  sudo pacman -S --noconfirm --needed lah curl make cmake base base-devel
+  sudo pacman -S --noconfirm --needed lha curl make cmake base base-devel
   echo -e "${msg_st02_4}"
   cd $HOME
   mkdir -p $HOME/tmp_firmware
@@ -209,79 +266,26 @@ function missing_firmware() {
   curl -L -O https://aur.archlinux.org/cgit/aur.git/snapshot/wd719x-firmware.tar.gz
   curl -L -O https://aur.archlinux.org/cgit/aur.git/snapshot/upd72020x-fw.tar.gz
   # -- untar
-  for archive in "find *"; do sudo tar -xvf "${archive}"; done
+  for archive in *; do tar -xvf "${archive}"; done
+  # ---- TODO: ? check for success ?
   # -- makepkg & install
   for pkg in *; do
-    let zst_file_name="find -type -f -name '*pkg.tar.zst'"
     if [ -d "$pkg" ]; then
-        # Will not run if no directories are available
-        echo "-- making pakage for: $pkg and installing --"
-        makepkg && sudo pacman -U --noconfirm --needed $zst_file_name
-        echo "-- installing of $pkg DONE OK --"
+      cd "$pkg"
+      echo -e "${msg_st02_5}"
+      makepkg -s -i
+      # makepkg -si --noconfirm
+      # see #NAIL_01 in .org
+      #
+      echo -e "${msg_st02_6}"
+      cd ..
     fi
   done
-}
-  #
-  #
-  # ---- TODO: fix this #NAIL:
-  cd ~/tmp-firmware/aic94xx-firmware
-  makepkg
-  sudo pacman -U aic94xx-firmware-30-10-any.pkg.tar.zst
-  echo -e "${msg_st02_5}"
-  cd ~/tmp-firmware/wd719x-firmware
-  makepkg
-  sudo pacman -U wd719x-firmware-1-7-any.pkg.tar.zst
-  echo -e "${msg_st02_6}"
-  cd ~/tmp-firmware/upd72020x-fw
-  sudo pacman -U upd72020x-fw-1\:1.0.0-2-any.pkg.tar.zst
   echo -e "${msg_st02_7}"
+}
 #
-#
-# TODO: ? check // ? what about cd in dirs
-# https://stackoverflow.com/questions/25042643/untar-all-gz-in-directories-and-subdirectories
-# for pack in "find *.zst"; do          # <- ? will it find in all dirs ?
-#       makepkg && sudo packman -U "${pack}" ; done
-#
-#
-# ---- TODO: cycle to cd in every directory, run 'make' & run install.
-# contence
-# -> makepkg
-# -> sudo pacman -U <.....>.zst
-# -- v1:
-# for d in ./*/ ; do (cd "$d" && make && sudo pacman -U "<................>"); done
-#
-# -- v2:
-#
-# for D in ./*; do
-#    if [ -d "$D" ]; then
-#        cd "$D"
-#        run_something
-#        cd ..
-#    fi
-# done
-#
-#
-# -- v2-1
-# for i in `ls -d ./*/`
-# do
-#  cd "$i"
-#  command
-#  cd ..
-# done
-#
-#
-#
-#
-# -- v3:
-#
-# cd -P .
-# for dir in ./*/
-# do cd -P "$dir" ||continue
-#   printf %s\\n "$PWD" >&2
-#   command && cd "$OLDPWD" ||
-# ! break; done || ! cd - >&2
-#
-#
+function base_pkg() {
+echo ""
 }
 #
 #
@@ -289,6 +293,23 @@ function missing_firmware() {
 #
 #
 #
+#
+#
+#
+#
+#
+#
+#
+#
+#
+#
+##############################################
+# ---- STAGE_00 EXEC-FUNCTION ----
+#
+#
+function stage_02() {
+  missing_firmware
+}
 #
 #
 #
@@ -306,6 +327,7 @@ function missing_firmware() {
 #
 #
 function main() {
+  init_config
   stage_00
   stage_01
   stage_02
