@@ -2,6 +2,8 @@
 #
 # -- test for package list
 
+source "malis-packages.conf"
+
 PKGS=(
     "mc"
     "vim"
@@ -11,7 +13,9 @@ PKGS=(
 #
 #
 for PKG in "${PKGS[@]}"; do
-   sudo pacman -Qs "$PKG"
+   echo "#### #### #### ####"
+   sudo pacman -Qs "$PACKAGES_PACMAN"
+   echo "#### #### #### ####"
 done
 #
 echo "---- sh-01 OK ----"

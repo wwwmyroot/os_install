@@ -3,22 +3,7 @@
 # My Arch Linux Install Script (malis)
 # Startup file for my cusom OS installation on my PC.
 #
-# * Current todo [2023-12-02]
-# TODO [0/7]
-# - [ ] #dev: ? LOG functional;
-# - [ ] #dev: ? additional info about packages for every stage;
-# - [ ] #define: After official installer [0/4]
-#   - [ ] save .json from official installer;
-#   - [ ] get list of missing firmware after official install on PC;
-#   - [ ] may be 'base' 'curl' 'make' are already installed by official installation;
-#   - [ ] what packages to install with official installer;
-#         : candidates: curl make cmake base base-devel lha linux-firmware linux-firmware-qlogic
-# - [ ] discover how to echo string to a proper section of a file (maybe "sed");
-# - [ ] #maybe: ? colorise messages ?
-# - [ ] global execution as root is needed to function 'ru_locale'.
-#       It needs an access to '/etc/locale.gen' and func 'ask_sudo' has no effect to command 'sed');
-# - [ ] check syntax in 'sed' (use "s/pattern-find/pattarn-replace/" or "s|pattern-find|pattarn-replace|")
-#
+# See all TODO in .../org/malis.org
 #
 # ---- SCRIPT SELF PREPARATION ----
 set -euo pipefail
@@ -33,15 +18,27 @@ set -euo pipefail
 # ---- | STAGE-00 | - PREPARATIONS;
 #
 function init_config() {
-    local COMMONS_FILE="malis-commons__v01.sh"
-    # local MESSAGES_FILE="malis-messages__v01.sh"
+    local COMMONS_FILE="./malis-commons.sh"
+    # local MESSAGES_FILE="malis-messages.sh"
 
-    source "$COMMONS_FILE"
-    source "$COMMONS_CONF_FILE"
-    source "$MALIS_CONF_FILE"
-    source "$MALIS_MESSAGES_FILE"
+    source "${COMMONS_FILE}"
+    source "${COMMONS_CONF_FILE}"
+    source "${MALIS_CONF_FILE}"
+    source "${MALIS_MESSAGES_FILE}"
 }
 #
+# ---- TODO: fill a list of variables to sanitize in malis.sh ; example is below
+function sanitize_variables() {
+  DEVICE=$(sanitize_variable "$DEVICE") # example
+  CUSTOM_SHELL=$(sanitize_variable "$CUSTOM_SHELL")
+  DESKTOP_ENVIRONMENT=$(sanitize_variable "$DESKTOP_ENVIRONMENT")
+  DISPLAY_MANAGER=$(sanitize_variable "$DISPLAY_MANAGER")
+  SYSTEMD_UNITS=$(sanitize_variable "$SYSTEMD_UNITS")
+}
+#
+# function check_variables() {
+# hhh
+# }
 #
 # ---- CHECK CURRENT RUN DIRECTORY WITH ANCOR DIRECTORY ($HOME/malis) | [TEST: OK] ----
 function check_ancor_dir() {

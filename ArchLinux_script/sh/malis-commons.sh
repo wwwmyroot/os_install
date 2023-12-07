@@ -6,7 +6,9 @@
 set -eu
 #
 # common static variables
+COMMONS_CONF_FILE="malis-commons.conf"
 MALIS_CONF_FILE="malis.conf"
+MALIS_MESSAGES_FILE="malis-messages.sh"
 MALIS_LOG_FILE="malis.log"
 #-NO-# MALIS_ASCIINEMA_FILE="malis.asciinema"
 #? RECOVERY_CONF_FILE="malis-recovery.conf"
@@ -14,12 +16,9 @@ MALIS_LOG_FILE="malis.log"
 #? RECOVERY_ASCIINEMA_FILE="malis-recovery.asciinema"
 PACKAGES_CONF_FILE="malis-packages.conf"
 PACKAGES_LOG_FILE="malis-packages.log"
-COMMONS_CONF_FILE="malis-commons.conf"
 PROVISION_DIRECTORY="files/"
 #
-MALIS_MESSAGES_FILE="malis-messages__v01.sh"
 #
-
 
 
 RED='\033[0;91m'
