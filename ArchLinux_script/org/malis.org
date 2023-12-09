@@ -6,9 +6,11 @@
 TODO [0/8]
 - [ ] #dev: LOG functional;
 - [ ] #dev: additional info about packages for every stage;
+      - save package list: pacman -Q > $HOME/pkg_list__start_point.txt
+      - count packages:  pacman -Q | wc -l >> $HOME/pkg_list__start_point.txt
 - [ ] #DEFINE_ArchInstall: [0/4]
   - [ ] save .json from official installer;
-  - [ ] get list of missing firmware on PC;
+  - [ ] get list of missing firmware on PC; (see add info in my 'notes')
   - [ ] may be 'base' 'curl' 'make' are already installed by official installation;
   - [ ] define what packages to install with official installer;
     : candidates: curl make cmake base base-devel lha linux-firmware linux-firmware-qlogic git
@@ -284,6 +286,20 @@ do cd -P "$dir" ||continue
 #
 
 #+end_src
+** ---- execute sudo
+#+begin_src shell :eval no :noeval true
+# ---- TOCHECK: execute sudo
+# /mnt/hdd3/AL/0W/My_OS_Install_Script/example/alis/alis-commons.sh
+function execute_sudo() {
+    local COMMAND="$1"
+    if [ "$SYSTEM_INSTALLATION" == "true" ]; then
+        arch-chroot "${MNT_DIR}" bash -c "$COMMAND"
+    else
+        sudo bash -c "$COMMAND"
+    fi
+}
+#+end_src
+
 
 * # ---- RAW VICTORS PART OF FILE
 

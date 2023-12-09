@@ -6,27 +6,39 @@
 set -eu
 #
 # common static variables
-COMMONS_CONF_FILE="malis-commons.conf"
-MALIS_CONF_FILE="malis.conf"
-MALIS_MESSAGES_FILE="malis-messages.sh"
-MALIS_LOG_FILE="malis.log"
+COMMONS_CONF_FILE="./malis-commons.conf"
+MALIS_CONF_FILE="./malis.conf"
+MALIS_MESSAGES_FILE="./malis-messages.sh"
+TERMINAL_COLORS_CONF_FILE="./terminal-colors.conf"
 #-NO-# MALIS_ASCIINEMA_FILE="malis.asciinema"
 #? RECOVERY_CONF_FILE="malis-recovery.conf"
 #? RECOVERY_LOG_FILE="malis-recovery.log"
 #? RECOVERY_ASCIINEMA_FILE="malis-recovery.asciinema"
-PACKAGES_CONF_FILE="malis-packages.conf"
-PACKAGES_LOG_FILE="malis-packages.log"
-PROVISION_DIRECTORY="files/"
+#? PROVISION_DIRECTORY="files/"
+MALIS_LOG_FILE="./malis.log"
+PACKAGES_CONF_FILE="./malis-packages.conf"
+PACKAGES_LOG_FILE="./malis-packages.log"
 #
 #
-
-
 RED='\033[0;91m'
 GREEN='\033[0;92m'
 BLUE='\033[0;96m'
 WHITE='\033[0;97m'
 NC='\033[0m'
-
+#
+#
+function execute_step() {
+    local STEP="$1"
+    eval "$STEP"
+}
+#
+function print_step() {
+    STEP="$1"
+    echo ""
+    echo -e "${BLUE}#### ---- ${STEP} step ---- ####${NC}"
+    echo ""
+}
+#
 function sanitize_variable() {
     local VARIABLE="$1"
     local VARIABLE=$(echo "$VARIABLE" | sed "s/![^ ]*//g") # remove disabled
@@ -35,14 +47,14 @@ function sanitize_variable() {
     local VARIABLE=$(echo "$VARIABLE" | sed 's/[[:space:]]*$//') # trim trailing
     echo "$VARIABLE"
 }
-
+#
 function trim_variable() {
     local VARIABLE="$1"
     local VARIABLE=$(echo "$VARIABLE" | sed 's/^[[:space:]]*//') # trim leading
     local VARIABLE=$(echo "$VARIABLE" | sed 's/[[:space:]]*$//') # trim trailing
     echo "$VARIABLE"
 }
-
+#
 function check_variables_value() {
     local NAME="$1"
     local VALUE="$2"
@@ -51,13 +63,13 @@ function check_variables_value() {
         exit 1
     fi
 }
-
+#
 function check_variables_boolean() {
     local NAME="$1"
     local VALUE="$2"
     check_variables_list "$NAME" "$VALUE" "true false" "true" "true"
 }
-
+#
 function check_variables_list() {
     local NAME="$1"
     local VALUE="$2"
@@ -79,7 +91,7 @@ function check_variables_list() {
         exit 1
     fi
 }
-
+#
 function check_variables_equals() {
     local NAME1="$1"
     local NAME2="$2"
@@ -90,7 +102,7 @@ function check_variables_equals() {
         exit 1
     fi
 }
-
+#
 function check_variables_size() {
     local NAME="$1"
     local SIZE_EXPECT="$2"
@@ -100,7 +112,7 @@ function check_variables_size() {
         exit 1
     fi
 }
-
+# ----
 function configure_network() {
     if [ -n "$WIFI_INTERFACE" ]; then
         iwctl --passphrase "$WIFI_KEY" station "$WIFI_INTERFACE" connect "$WIFI_ESSID"
@@ -113,7 +125,7 @@ function configure_network() {
         exit 1
     fi
 }
-
+#
 function facts_commons() {
     if [ -d /sys/firmware/efi ]; then
         BIOS_TYPE="uefi"
@@ -175,14 +187,14 @@ function facts_commons() {
         SYSTEM_INSTALLATION="false"
     fi
 }
-
+#
 function init_log_trace() {
     local ENABLE="$1"
     if [ "$ENABLE" == "true" ]; then
         set -o xtrace
     fi
 }
-
+#
 function init_log_file() {
     local ENABLE="$1"
     local FILE="$2"
@@ -190,7 +202,7 @@ function init_log_file() {
         exec &> >(tee -a "$FILE")
     fi
 }
-
+#
 function pacman_uninstall() {
     local ERROR="true"
     local PACKAGES=()
@@ -217,7 +229,7 @@ function pacman_uninstall() {
         exit 1
     fi
 }
-
+#
 function pacman_install() {
     local ERROR="true"
     local PACKAGES=()
@@ -238,7 +250,7 @@ function pacman_install() {
         exit 1
     fi
 }
-
+#
 function aur_install() {
     local ERROR="true"
     local PACKAGES=()
@@ -263,14 +275,14 @@ function aur_install() {
         return
     fi
 }
-
+#
 function aur_command_install() {
     pacman_install "git"
     local USER_NAME="$1"
     local COMMAND="$2"
     execute_aur "rm -rf /home/$USER_NAME/.alis && mkdir -p /home/$USER_NAME/.alis/aur && cd /home/$USER_NAME/.alis/aur && git clone https://aur.archlinux.org/${COMMAND}.git && (cd $COMMAND && makepkg -si --noconfirm) && rm -rf /home/$USER_NAME/.alis"
 }
-
+#
 function systemd_units() {
     local UNITS=()
     IFS=' ' read -ra UNITS <<< "$SYSTEMD_UNITS"
@@ -293,7 +305,7 @@ function systemd_units() {
         fi
     done
 }
-
+#
 function execute_flatpak() {
     local COMMAND="$1"
     if [ "$SYSTEM_INSTALLATION" == "true" ]; then
@@ -302,7 +314,7 @@ function execute_flatpak() {
         bash -c "$COMMAND"
     fi
 }
-
+#
 function execute_aur() {
     local COMMAND="$1"
     if [ "$SYSTEM_INSTALLATION" == "true" ]; then
@@ -313,7 +325,7 @@ function execute_aur() {
         bash -c "$COMMAND"
     fi
 }
-
+#
 function execute_sudo() {
     local COMMAND="$1"
     if [ "$SYSTEM_INSTALLATION" == "true" ]; then
@@ -322,7 +334,7 @@ function execute_sudo() {
         sudo bash -c "$COMMAND"
     fi
 }
-
+#
 function execute_user() {
     local USER_NAME="$1"
     local COMMAND="$2"
@@ -332,25 +344,14 @@ function execute_user() {
         bash -c "$COMMAND"
     fi
 }
-
+#
 function do_reboot() {
     umount -R "${MNT_DIR}"/boot
     umount -R "${MNT_DIR}"
     reboot
 }
-
-function print_step() {
-    STEP="$1"
-    echo ""
-    echo -e "${BLUE}# ${STEP} step${NC}"
-    echo ""
-}
-
-function execute_step() {
-    local STEP="$1"
-    eval "$STEP"
-}
-
+#
+#
 function ask_password() {
     PASSWORD_NAME="$1"
     PASSWORD_VARIABLE="$2"

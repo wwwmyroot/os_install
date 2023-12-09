@@ -25,20 +25,41 @@ function init_config() {
     source "${COMMONS_CONF_FILE}"
     source "${MALIS_CONF_FILE}"
     source "${MALIS_MESSAGES_FILE}"
+    source "${TERMINAL_COLORS_CONF_FILE}"
 }
+#
+# ---- TODO: check access to files | [TEST: TODO] ----
+#function checkout_files() {
+#    local f1="$RUN_SCRIPT_DIRECTORY/$MALIS_MESSAGES_FILE"
+#    if [ -f $MALIS_MESSAGES_FILE ]; then
+#        source "$MALIS_MESSAGES_FILE"
+#    else
+#        # echo -e "${RED}-- (!) ERROR:${NC} MISSING $(MSG_FILE) TO SOURCE."
+#        echo -e "${RED}-- (!) ERROR:${NC} * ${BLUE}MISSING${NC} ${GREEN}${MSG_FILE}${NC} ${BLUE}TO SOURCE.${NC} *"
+#        echo -e "${RED}-- CHECK SCRIPT STARTUP DIRECTORY: --${NC}"
+#        pwd | ls -la
+#        echo -e "---- ---- STOP ---- ----"
+#        exit 1
+#    fi
+#}
+#
 #
 # ---- TODO: fill a list of variables to sanitize in malis.sh ; example is below
 function sanitize_variables() {
-  DEVICE=$(sanitize_variable "$DEVICE") # example
-  CUSTOM_SHELL=$(sanitize_variable "$CUSTOM_SHELL")
-  DESKTOP_ENVIRONMENT=$(sanitize_variable "$DESKTOP_ENVIRONMENT")
-  DISPLAY_MANAGER=$(sanitize_variable "$DISPLAY_MANAGER")
-  SYSTEMD_UNITS=$(sanitize_variable "$SYSTEMD_UNITS")
+  PACKAGES_PACMAN=$(sanitize_variable "${PACKAGES_PACMAN}")
+  USER_NAME=$(sanitize_variable "${USER_NAME}")
+  #
 }
 #
-# function check_variables() {
-# hhh
-# }
+function check_variables() {
+  check_variables_value "USER_NAME" "${USER_NAME}"                  # non zero
+  check_variables_value "PACKAGES_PACMAN" "${PACKAGES_PACMAN}"      # non zero
+}
+#
+function execute_sudo() {
+    local COMMAND="$1"
+    sudo bash -c "${COMMAND}"
+}
 #
 # ---- CHECK CURRENT RUN DIRECTORY WITH ANCOR DIRECTORY ($HOME/malis) | [TEST: OK] ----
 function check_ancor_dir() {
@@ -61,23 +82,6 @@ function check_ancor_dir() {
 # -- TODO: Make a decision. Develop appropriete scenarios. Include in malis-messages.sh.
 }
 #
-# ---- TODO: check access to files | [TEST: TODO] ----
-#function checkout_files() {
-#    local f1="$RUN_SCRIPT_DIRECTORY/$MALIS_MESSAGES_FILE"
-#    if [ -f $MALIS_MESSAGES_FILE ]; then
-#        source "$MALIS_MESSAGES_FILE"
-#    else
-#        # echo -e "${RED}-- (!) ERROR:${NC} MISSING $(MSG_FILE) TO SOURCE."
-#        echo -e "${RED}-- (!) ERROR:${NC} * ${BLUE}MISSING${NC} ${GREEN}${MSG_FILE}${NC} ${BLUE}TO SOURCE.${NC} *"
-#        echo -e "${RED}-- CHECK SCRIPT STARTUP DIRECTORY: --${NC}"
-#        pwd | ls -la
-#        echo -e "---- ---- STOP ---- ----"
-#        exit 1
-#    fi
-# source ./malis-messages.sh         # direct command
-#}
-#
-#
 # ---- ECHO WELCOME MESSAGE | [TEST: OK]
 function msg_welcome() {
   echo -e "$msg_line"
@@ -91,20 +95,6 @@ function ask_sudo() {
   echo "$msg_st00_3"
   sudo pwd >> /dev/null
 }
-#
-# ---- TOCHECK: execute sudo
-# /mnt/hdd3/AL/0W/My_OS_Install_Script/example/alis/alis-commons.sh
-#
-# function execute_sudo() {
-#     local COMMAND="$1"
-#     if [ "$SYSTEM_INSTALLATION" == "true" ]; then
-#         arch-chroot "${MNT_DIR}" bash -c "$COMMAND"
-#     else
-#         sudo bash -c "$COMMAND"
-#     fi
-# }
-# ---- end TOCHECK ----
-#
 #
 # ---- CONFIGURE TIME | [TEST: OK]
 function configure_time() {
@@ -123,9 +113,9 @@ function ru_locale() {
   # v1: simple as a nail;
   # sudo echo "ru_RU.UTF-8 UTF-8" >> /etc/locale.gen
   # v2: more elegant
-  sudo sed -i -e "s|#ru_RU.UTF-8|ru_RU.UTF-8|" "/etc/locale.gen"
+  execute_sudo "sed -i -e 's/#ru_RU.UTF-8/ru_RU.UTF-8/' /etc/locale.gen"
   #
-  sudo locale-gen
+  execute_sudo "locale-gen"
   # cd $HOME
   touch $HOME/.xinitrc
   echo "setxkbmap -lauout us,ru -option grp:caps_toggle" >> $HOME/.xinitrc
@@ -134,13 +124,12 @@ function ru_locale() {
   #       and crash reading of a whole script. Switching 'sh-electric-here-document-mode'
   #       gives nothing. Strange bullshit. Possible solution - set "<<<", but
   #       i rewrite command to be a single call of 'sed'.
-  # sudo sed -i -e "s|#ru_RU.UTF-8|ru_RU.UTF-8|" << /etc/locale.gen
+  # sudo sed -i -e "s/#ru_RU.UTF-8/ru_RU.UTF-8/" << /etc/locale.gen
 # -- NOTE: Need to execute of main script (mail.sh) as root at the begining;
 #          'ask_root' function does not solve access as root to '/etc/local.gen'.
 }
 #
 # ---- SETUP PACMAN | [TEST: TODO]
-#
 function setup_pacman() {
   # TODO: choose --v1: to edit /etc/pacman.conf; --v2: copy dotfile as root;
   # --v1: uncomment and/or set values:
@@ -149,9 +138,18 @@ function setup_pacman() {
     # CheckSpace                # -> ? uncomment if default is commented;
     # VerbosePkgLists           # -> uncomment;
     # ParallelDownloads = 50    # uncomment and set to "50";
-    sudo sed -i "s|#Color|Color|" "/etc/pacman.conf"
-    sudo sed -i "s|#CheckSpace|CheckSpace|" "/etc/pacman.conf"
-    sudo sed -i "s|#ParallelDownloads = 5|ParallelDownloads = 50|" "/etc/pacman.conf"
+    #
+    # ---- direct command ----
+    #
+    # sudo sed -i "s/#Color/Color/" /etc/pacman.conf
+    # sudo sed -i "s/#CheckSpace/CheckSpace/" /etc/pacman.conf
+    # sudo sed -i "s/#ParallelDownloads = 5/ParallelDownloads = 50/" /etc/pacman.conf
+    #
+    # ---- comand with execute_sudo() ----
+    #
+    execute_sudo "sed -i 's/#Color/Color/' /etc/pacman.conf"
+    execute_sudo "sed -i 's/#CheckSpace/CheckSpace/' /etc/pacman.conf"
+    execute_sudo "sed -i 's/#ParallelDownloads = 5/ParallelDownloads = 50/' /etc/pacman.conf"
     #
     #
     # -- v2:
@@ -160,29 +158,8 @@ function setup_pacman() {
     #? sudo \cp "$script_folder/pacman.conf" /etc/
 }
 #
-# ---- STAGE_00 EXEC-FUNCTION ----
-#
-function stage_00() {
-  msg_welcome
-  ask_sudo
-  configure_time
-  ru_locale
-  setup_pacman
-}
-#
-# TODO: develop & add in stage_00:
-#  1) infrastructure for script LOGGING;
-#     # see "alis"
-#  2) save additional info about packages at all stages;
-#     # save package list: pacman -Q > $HOME/pkg_list__start_point.txt
-#     # count packages:  pacman -Q | wc -l >> $HOME/pkg_list__start_point.txt
-#
-#
-# ---- STAGE-01 ----
-#
-# ---- STAGE_01 EXEC-FUNCTION ----
-#
-function stage_01() {
+# ---- UPDATE KEYRING , PARTIAL UPDATE SYSTEM ----
+function update_keyring() {
   echo -e "$msg_st01_0"
   # init keys;
   sudo pacman-key --init
@@ -205,16 +182,7 @@ function stage_01() {
   echo -e "$msg_st01_f"
 }
 #
-##############################################
-# ---- STAGE-02 ----
-##############################################
-#
-# ---- SOLVE ERRORS FOR MISSING FIRMWARE | [TEST: OK]----
-#
-# see: /mnt/hdd3/AL/MyNotes/notes/00_rebase/soft/01_OS_install/PossiblyMissingFirmware.org
-# TODO: explore what hardware are missing at PC after installation;
-# NOTE: if you deside to use AUR repos - install firmware via AUR helpers;
-#
+# ---- INSTALL PKG FOR MISSING FIRMWARE
 function missing_firmware() {
   # [2023-12-02] Solution for missing firmware ""; ""; ""; "";
   echo -e "${msg_st02_1}"
@@ -251,54 +219,142 @@ function missing_firmware() {
   echo -e "${msg_st02_7}"
 }
 #
-function base_pkg() {
-echo ""
+# -- TODO
+function install_video_drivers() {
+  print_step "install_video_drivers()"
+  #
+}
+#
+# -- TODO
+function install_audio_drivers() {
+  print_step "install_audio_drivers()"
+  #
+}
+#
+# -- TODO
+function install_wacom_drivers() {
+  print_step "install_wacom_drivers()"
+  #
+}
+#
+# -- TODO
+function install_pkg_pacman() {
+  print_step "install_pkg_pacman()"
+  #
+}
+#
+# ---- TODO explore
+function packages_pacman() {
+    print_step "packages_pacman()"
+
+    if [ "$PACKAGES_PACMAN_INSTALL" == "true" ]; then
+        local CUSTOM_REPOSITORIES="$(echo "$PACKAGES_PACMAN_CUSTOM_REPOSITORIES" | grep -E "^[^#]|\n^$"; exit 0)"
+        if [ -n "$CUSTOM_REPOSITORIES" ]; then
+            execute_sudo "echo -e \"# alis\n$CUSTOM_REPOSITORIES\" >> /etc/pacman.conf"
+        fi
+
+        if [ -n "$PACKAGES_PACMAN" ]; then
+            pacman_install "$PACKAGES_PACMAN"
+        fi
+
+        if [[ ("$PACKAGES_PIPEWIRE" == "true" || "$PACKAGES_PACMAN_INSTALL_PIPEWIRE" == "true") && -n "$PACKAGES_PACMAN_PIPEWIRE" ]]; then
+            if echo "$PACKAGES_PACMAN_PIPEWIRE" | grep -F -qw "pipewire-pulse"; then
+                pacman_uninstall "pulseaudio pulseaudio-bluetooth"
+            fi
+            if echo "$PACKAGES_PACMAN_PIPEWIRE" | grep -F -qw "pipewire-alsa"; then
+                pacman_uninstall "pulseaudio pulseaudio-alsa"
+            fi
+            if echo "$PACKAGES_PACMAN_PIPEWIRE" | grep -F -qw "wireplumber"; then
+                pacman_uninstall "pipewire-media-session"
+            fi
+            if echo "$PACKAGES_PACMAN_PIPEWIRE" | grep -F -qw "pipewire-jack"; then
+                pacman_uninstall "jack2"
+            fi
+            pacman_install "$PACKAGES_PACMAN_PIPEWIRE"
+            #if [ -n "$(echo "$PACKAGES_PACMAN_PIPEWIRE" | grep -F -w "pipewire-pulse")" ]; then
+            #    execute_user "$USER_NAME" "systemctl enable --user pipewire-pulse.service"
+            #fi
+        fi
+    fi
+}
+
+#
+#
+#
+# ---- TODO explore
+function pacman_install() {
+    local ERROR="true"
+    local PACKAGES=()
+    set +e
+    IFS=' ' read -ra PACKAGES <<< "$1"
+    for VARIABLE in {1..5}
+    do
+        local COMMAND="pacman -Syu --noconfirm --needed ${PACKAGES[*]}"
+       if execute_sudo "$COMMAND"; then
+            local ERROR="false"
+            break
+        else
+            sleep 10
+        fi
+    done
+    set -e
+    if [ "$ERROR" == "true" ]; then
+        exit 1
+    fi
 }
 #
 #
 #
-##############################################
-# ---- STAGE_00 EXEC-FUNCTION ----
+# -------------------------
 #
 #
-function stage_02() {
-  missing_firmware
+#
+# -- TODO
+function copy_dotfiles() {
+  print_step "install_pkg_pacman()"
+  #
 }
 #
-#
-#
-##############################################
-# ---- #### ---- MAIN WORKFLOW ---- #### ----
-##############################################
-#
-#
-# ---- #### ---- MAIN WORKFLOW ---- #### ----
-#
-#
+# -- TODO
+function user_settings() {
+  print_step "user_settings()"
+  #
+}
 #
 #
 function main() {
     local START_TIMESTAMP=$(date -u +"%F %T")
+    # -- stage 00 -- prepare
     init_config
-
     execute_step "sanitize_variables"
     execute_step "check_variables"
 
+    execute_step "msg_welcome"
+    execute_step "ask_sudo"
+    execute_step "configure_time"
+    #t  execute_step "ru_locale"
+    #t  execute_step "setup_pacman"
+    #t  execute_step "update_keyring"
+    #t  execute_step "missing_firmware"
+    #t  execute_step "install_video_drivers"
+    #t  execute_step "install_audio_drivers"
+    #t  execute_step "install_wacom_drivers"
+    #t  execute_step "install_pkg_pacman"
+    #t  execute_step "copy_dotfiles"
+    #t  execute_step "user_settings"
+
+# -- stage 01 -- install packages (pacman)
+
+
+# -- stage 01 -- copy dotfiles
 
 
 
-    execute_step "stage_00"
-    execute_step "stage_01"
-    execute_step "stage_02"
-
-
-
-
-
+# -- FINISH --
     local END_TIMESTAMP=$(date -u +"%F %T")
     local INSTALLATION_TIME=$(date -u -d @$(($(date -d "$END_TIMESTAMP" '+%s') - $(date -d "$START_TIMESTAMP" '+%s'))) '+%T')
     echo -e "Installation start ${WHITE}$START_TIMESTAMP${NC}, end ${WHITE}$END_TIMESTAMP${NC}, time ${WHITE}$INSTALLATION_TIME${NC}"
-    execute_step "end"
+    # execute_step "end"
 }
 #
 main "$@"
