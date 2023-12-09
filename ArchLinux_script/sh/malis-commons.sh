@@ -112,7 +112,7 @@ function check_variables_size() {
         exit 1
     fi
 }
-# ----
+#
 function configure_network() {
     if [ -n "$WIFI_INTERFACE" ]; then
         iwctl --passphrase "$WIFI_KEY" station "$WIFI_INTERFACE" connect "$WIFI_ESSID"
@@ -131,12 +131,6 @@ function facts_commons() {
         BIOS_TYPE="uefi"
     else
         BIOS_TYPE="bios"
-    fi
-
-    if [ -f "$MALIS_ASCIINEMA_FILE" ] || [ -f "$RECOVERY_ASCIINEMA_FILE" ]; then
-        ASCIINEMA="true"
-    else
-        ASCIINEMA="false"
     fi
 
     if lscpu | grep -q "GenuineIntel"; then
@@ -185,6 +179,48 @@ function facts_commons() {
         SYSTEM_INSTALLATION="true"
     else
         SYSTEM_INSTALLATION="false"
+    fi
+}
+# ----
+function execute_sudo() {
+    local COMMAND="$1"
+    if [ "$SYSTEM_INSTALLATION" == "true" ]; then
+        arch-chroot "${MNT_DIR}" bash -c "$COMMAND"
+    else
+        sudo bash -c "$COMMAND"
+    fi
+}
+#
+function execute_user() {
+    local USER_NAME="$1"
+    local COMMAND="$2"
+    if [ "$SYSTEM_INSTALLATION" == "true" ]; then
+        arch-chroot "${MNT_DIR}" bash -c "su $USER_NAME -s /usr/bin/bash -c \"$COMMAND\""
+    else
+        bash -c "$COMMAND"
+    fi
+}
+#
+function do_reboot() {
+    umount -R "${MNT_DIR}"/boot
+    umount -R "${MNT_DIR}"
+    reboot
+}
+#
+#
+function ask_password() {
+    PASSWORD_NAME="$1"
+    PASSWORD_VARIABLE="$2"
+    read -r -sp "Type ${PASSWORD_NAME} password: " PASSWORD1
+    echo ""
+    read -r -sp "Retype ${PASSWORD_NAME} password: " PASSWORD2
+    echo ""
+    if [[ "$PASSWORD1" == "$PASSWORD2" ]]; then
+        declare -n VARIABLE="${PASSWORD_VARIABLE}"
+        VARIABLE="$PASSWORD1"
+    else
+        echo "${PASSWORD_NAME} password don't match. Please, type again."
+        ask_password "${PASSWORD_NAME}" "${PASSWORD_VARIABLE}"
     fi
 }
 #
@@ -251,6 +287,7 @@ function pacman_install() {
     fi
 }
 #
+# ---- NO ----
 function aur_install() {
     local ERROR="true"
     local PACKAGES=()
@@ -326,44 +363,3 @@ function execute_aur() {
     fi
 }
 #
-function execute_sudo() {
-    local COMMAND="$1"
-    if [ "$SYSTEM_INSTALLATION" == "true" ]; then
-        arch-chroot "${MNT_DIR}" bash -c "$COMMAND"
-    else
-        sudo bash -c "$COMMAND"
-    fi
-}
-#
-function execute_user() {
-    local USER_NAME="$1"
-    local COMMAND="$2"
-    if [ "$SYSTEM_INSTALLATION" == "true" ]; then
-        arch-chroot "${MNT_DIR}" bash -c "su $USER_NAME -s /usr/bin/bash -c \"$COMMAND\""
-    else
-        bash -c "$COMMAND"
-    fi
-}
-#
-function do_reboot() {
-    umount -R "${MNT_DIR}"/boot
-    umount -R "${MNT_DIR}"
-    reboot
-}
-#
-#
-function ask_password() {
-    PASSWORD_NAME="$1"
-    PASSWORD_VARIABLE="$2"
-    read -r -sp "Type ${PASSWORD_NAME} password: " PASSWORD1
-    echo ""
-    read -r -sp "Retype ${PASSWORD_NAME} password: " PASSWORD2
-    echo ""
-    if [[ "$PASSWORD1" == "$PASSWORD2" ]]; then
-        declare -n VARIABLE="${PASSWORD_VARIABLE}"
-        VARIABLE="$PASSWORD1"
-    else
-        echo "${PASSWORD_NAME} password don't match. Please, type again."
-        ask_password "${PASSWORD_NAME}" "${PASSWORD_VARIABLE}"
-    fi
-}
