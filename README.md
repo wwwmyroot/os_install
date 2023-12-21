@@ -37,7 +37,7 @@ copy of my repo at notabug.org , so main branch is 'master', not github's 'main'
   - **'sh'** folder - to store scripts in development;
   - **'tests'** folder - to store tests;
   - **'in'** folder - to store additional data;
-  - **'org'** folder - to store details, notes, TODO-s, ... ; [main 'org' file](https://notabug.org/myroot/os_install/src/master/ArchLinux_script/org/InstallArchScript.org);
+  - **'org'** folder - to store details, notes, TODO-s, ... ; 
 
 ### Important notes
 
