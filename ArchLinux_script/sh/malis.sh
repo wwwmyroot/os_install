@@ -3,7 +3,7 @@
 # My Arch Linux Install Script (malis)
 # Startup file for my cusom OS installation on my PC.
 #
-# See all TODO in .../org/malis.org
+# NOTE: See all TODO in .../org/malis.org
 #
 # ---- SCRIPT SELF PREPARATION ----
 set -euo pipefail

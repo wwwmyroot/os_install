@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 # shellcheck disable=SC1090,SC2155,SC2034
 # SC1090: Can't follow non-constant source. Use a directive to specify location.
-# SC2155 Declare and assign separately to avoid masking return values
+# SC2155: Declare and assign separately to avoid masking return values
 # SC2034: foo appears unused. Verify it or export it.
 set -eu
 
